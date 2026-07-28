@@ -1,0 +1,122 @@
+##############################################################################
+# ASL — API Specification Language
+# File: spec/js/JS.yaml
+# Module: io.github.luandro.js
+# Description: Top-level JS module index & cross-cutting conventions
+##############################################################################
+
+package: io.github.luandro.js
+module: JS
+description: >
+  The `io.github.luandro.js` module wraps QuickJS-NG (a modern fork of QuickJS)
+  providing a full ES2023 JavaScript engine accessible from both Kotlin and Luau.
+  
+  All JavaScript execution flows through:
+    Runtime ──► Context ──► eval/evalModule ──► JSValue
+  
+  Promises are settled via Context.executePendingJobs().
+  ES Modules are resolved via Context.setModuleLoader().
+
+classes:
+  - Runtime:    Top-level engine container, GC root, memory limits
+  - Context:    Isolated execution environment with global object
+  - JSValue:    Wrapper for any JS value (primitive or object)
+  - Module:     ES Module loaded into a Context
+  - Promise:    Utilities for working with JS Promise values
+
+##############################################################################
+# Type mapping table (Kotlin ↔ JS ↔ Luau)
+##############################################################################
+type_mapping:
+  - kotlin: Boolean   → js: boolean   → luau: boolean
+  - kotlin: Int       → js: number    → luau: number
+  - kotlin: Long      → js: BigInt    → luau: number (lossy for large values)
+  - kotlin: Double    → js: number    → luau: number
+  - kotlin: String    → js: string    → luau: string
+  - kotlin: null      → js: null      → luau: nil
+  - kotlin: JSValue   → js: (any)     → luau: userdata or primitive
+
+##############################################################################
+# QuickJS-NG source
+##############################################################################
+native_dependency:
+  name: QuickJS-NG
+  url: https://github.com/quickjs-ng/quickjs
+  submodule_path: thirdparty/quickjs
+  version_policy: pin to tag, update manually
+
+##############################################################################
+# Luau global namespace
+##############################################################################
+luau_global: js
+luau_api: |
+  -- Available in Luau scripts via the `js` global:
+  js.newRuntime()                       → Runtime userdata
+  js.newRuntimeWithLimit(maxBytes)      → Runtime userdata
+  -- All other operations via Runtime/Context methods
+
+##############################################################################
+# Threading rules
+##############################################################################
+threading: |
+  - Runtime and all its Contexts MUST be used from a single thread.
+  - Calling methods from multiple threads concurrently is UNDEFINED BEHAVIOR.
+  - If multi-thread access is needed: create separate Runtimes per thread.
+
+##############################################################################
+# Memory management
+##############################################################################
+memory: |
+  - Runtime owns all Contexts.
+  - Context ref-counts all JSValues (QuickJS ref-count internally).
+  - JSValue.free() decrements ref-count; Context.close() frees all.
+  - Kotlin: use AutoCloseable (use block) for all Runtime and Context objects.
+  - Luau: __gc metamethods on userdata call corresponding native destructors.
+
+##############################################################################
+# Error handling
+##############################################################################
+error_handling: |
+  - JS errors are caught at the JNI boundary and re-thrown as JSException.
+  - JSException.message contains the JS error message.
+  - JSException.jsStack contains the JS stack trace string.
+  - JSException.errorValue (JSValue) contains the original JS Error object.
+  - Never let C++ exceptions propagate through JNI (caught and rethrown).
+
+##############################################################################
+# Examples
+##############################################################################
+examples:
+  kotlin_minimal: |
+    import io.github.luandro.js.Runtime
+
+    fun main() {
+        Runtime.create().use { runtime ->
+            runtime.newContext().use { ctx ->
+                println(ctx.eval("6 * 7").toInt())  // 42
+            }
+        }
+    }
+
+  kotlin_modules: |
+    Runtime.create().use { runtime ->
+        runtime.newContext().use { ctx ->
+            ctx.setModuleLoader { name, _ ->
+                if (name == "greet") "export const hello = name => `Hello, ${name}!`"
+                else null
+            }
+            ctx.evalModule("""
+                import { hello } from 'greet';
+                globalThis.msg = hello('World');
+            """, "app.js")
+            ctx.executePendingJobs()
+            println(ctx.getGlobal("msg").toString())  // Hello, World!
+        }
+    }
+
+  luau_minimal: |
+    local rt = js.newRuntime()
+    local ctx = rt:newContext()
+    print(ctx:eval("6 * 7"):toInt())  -- 42
+    ctx:close()
+    rt:close()

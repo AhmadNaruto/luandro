@@ -1,0 +1,372 @@
+##############################################################################
+# ASL — API Specification Language
+# File: spec/regex/Matcher.yaml
+# Class: io.github.luandro.regex.Matcher
+# Description: Regex matcher engine for executing pattern matching on strings
+##############################################################################
+
+package: io.github.luandro.regex
+class: Matcher
+description: >
+  Performs regex matching operations against a string (the "input") using a
+  compiled Pattern. A Matcher is always created from a Pattern and holds a
+  reference to the input string. It supports multiple match styles (full,
+  partial, find), group capture access, and reset/replace operations.
+
+native_type: luandro::regex::Matcher
+ownership: exclusive          # one Matcher per handle; not shared
+lifecycle: handle             # CREATED → ACTIVE → DESTROYED (via close())
+thread_safety: NOT_THREAD_SAFE
+
+##############################################################################
+# Constructors (not public — obtained via Pattern.matcher(input))
+##############################################################################
+constructors: []
+
+##############################################################################
+# Factory (static) — obtained through Pattern
+##############################################################################
+# Pattern.matcher(input) → Matcher  (defined in Pattern.yaml)
+
+##############################################################################
+# Methods
+##############################################################################
+methods:
+
+  - name: matches
+    description: >
+      Attempts to match the ENTIRE input against the pattern. Returns true only
+      if the whole string matches from start to end.
+    parameters: []
+    returns:
+      type: bool
+      description: true if the entire input matches the pattern
+    throws:
+      - MatcherClosedException: if the matcher has been destroyed
+    jni_name: nativeMatches
+    luau_name: matches
+    version: stable
+
+  - name: find
+    description: >
+      Scans the input looking for the next subsequence that matches the pattern.
+      Each successive call advances past the previous match. Returns true if a
+      match was found; after returning true, group() and start()/end() are valid.
+    parameters: []
+    returns:
+      type: bool
+      description: true if a match was found at or after the current position
+    throws:
+      - MatcherClosedException: if the matcher has been destroyed
+    jni_name: nativeFind
+    luau_name: find
+    version: stable
+
+  - name: findFrom
+    description: >
+      Resets the matcher and starts a new find scan from the given character
+      offset within the input string.
+    parameters:
+      - name: startIndex
+        type: int
+        description: zero-based character offset in the input string
+    returns:
+      type: bool
+      description: true if a match was found at or after startIndex
+    throws:
+      - IndexOutOfBoundsException: if startIndex < 0 or > input.length()
+      - MatcherClosedException: if the matcher has been destroyed
+    jni_name: nativeFindFrom
+    luau_name: findFrom
+    version: stable
+
+  - name: lookingAt
+    description: >
+      Attempts to match the input against the pattern, starting at the beginning
+      but NOT requiring the entire string to match (unlike matches()). Returns
+      true if the pattern matches a prefix of the input.
+    parameters: []
+    returns:
+      type: bool
+      description: true if the pattern matches a prefix of the input
+    throws:
+      - MatcherClosedException: if the matcher has been destroyed
+    jni_name: nativeLookingAt
+    luau_name: lookingAt
+    version: stable
+
+  - name: group
+    description: >
+      Returns the input subsequence captured by the most recent successful match
+      (group 0 = entire match).
+    parameters: []
+    returns:
+      type: String?
+      description: the matched substring, or null if no match was found
+    throws:
+      - IllegalStateException: if no match has been attempted yet
+      - MatcherClosedException: if the matcher has been destroyed
+    jni_name: nativeGroup
+    luau_name: group
+    version: stable
+
+  - name: groupByIndex
+    description: >
+      Returns the input subsequence captured by the given capturing group during
+      the most recent match. Group 0 is the entire match; groups 1..N are
+      capture groups in order of opening parenthesis.
+    parameters:
+      - name: groupIndex
+        type: int
+        description: capturing group index (0 = entire match, 1..N = capture groups)
+    returns:
+      type: String?
+      description: the captured substring, or null if the group did not participate
+    throws:
+      - IndexOutOfBoundsException: if groupIndex < 0 or > groupCount()
+      - IllegalStateException: if no match has been attempted yet
+      - MatcherClosedException: if the matcher has been destroyed
+    jni_name: nativeGroupByIndex
+    luau_name: groupAt
+    version: stable
+
+  - name: groupCount
+    description: >
+      Returns the number of capturing groups in the pattern used to create this
+      matcher. Group 0 (the whole match) is NOT counted.
+    parameters: []
+    returns:
+      type: int
+      description: number of capturing groups (>= 0)
+    throws:
+      - MatcherClosedException: if the matcher has been destroyed
+    jni_name: nativeGroupCount
+    luau_name: groupCount
+    version: stable
+
+  - name: start
+    description: >
+      Returns the start index (inclusive, zero-based) of the most recent match
+      within the input string.
+    parameters: []
+    returns:
+      type: int
+      description: start index of the last match
+    throws:
+      - IllegalStateException: if no match has been attempted yet
+      - MatcherClosedException: if the matcher has been destroyed
+    jni_name: nativeStart
+    luau_name: start
+    version: stable
+
+  - name: end
+    description: >
+      Returns the end index (exclusive, zero-based) of the most recent match
+      within the input string.
+    parameters: []
+    returns:
+      type: int
+      description: end index (exclusive) of the last match
+    throws:
+      - IllegalStateException: if no match has been attempted yet
+      - MatcherClosedException: if the matcher has been destroyed
+    jni_name: nativeEnd
+    luau_name: end_pos
+    version: stable
+
+  - name: reset
+    description: >
+      Resets the matcher's state, clearing any match result and repositioning
+      the find cursor to the start of the input. Does NOT change the input.
+    parameters: []
+    returns:
+      type: Matcher
+      description: this matcher (for chaining)
+    throws:
+      - MatcherClosedException: if the matcher has been destroyed
+    jni_name: nativeReset
+    luau_name: reset
+    version: stable
+
+  - name: resetWithInput
+    description: >
+      Resets the matcher and replaces the input string with a new one. The
+      compiled pattern is retained.
+    parameters:
+      - name: input
+        type: String
+        description: new input string to match against
+    returns:
+      type: Matcher
+      description: this matcher (for chaining)
+    throws:
+      - MatcherClosedException: if the matcher has been destroyed
+    jni_name: nativeResetWithInput
+    luau_name: resetWith
+    version: stable
+
+  - name: replaceAll
+    description: >
+      Replaces every non-overlapping match of the pattern in the input with the
+      given replacement string. Returns the resulting string.
+    parameters:
+      - name: replacement
+        type: String
+        description: replacement string (supports $0, $1 backreferences)
+    returns:
+      type: String
+      description: the new string with all matches replaced
+    throws:
+      - MatcherClosedException: if the matcher has been destroyed
+    jni_name: nativeReplaceAll
+    luau_name: replaceAll
+    version: stable
+
+  - name: replaceFirst
+    description: >
+      Replaces only the first match of the pattern in the input with the given
+      replacement string. Returns the resulting string.
+    parameters:
+      - name: replacement
+        type: String
+        description: replacement string (supports $0, $1 backreferences)
+    returns:
+      type: String
+      description: the new string with the first match replaced
+    throws:
+      - MatcherClosedException: if the matcher has been destroyed
+    jni_name: nativeReplaceFirst
+    luau_name: replaceFirst
+    version: stable
+
+  - name: toMatchResult
+    description: >
+      Returns a snapshot MatchResult capturing the current match state. The
+      snapshot is immutable and survives further find() calls.
+    parameters: []
+    returns:
+      type: MatchResult
+      description: immutable snapshot of the current match
+    throws:
+      - IllegalStateException: if no match has been attempted yet
+      - MatcherClosedException: if the matcher has been destroyed
+    jni_name: nativeToMatchResult
+    luau_name: toMatchResult
+    version: stable
+
+  - name: close
+    description: >
+      Releases the native Matcher resource. After calling close(), all further
+      method calls will throw MatcherClosedException. Implements
+      AutoCloseable / Closeable.
+    parameters: []
+    returns:
+      type: void
+    throws: []
+    jni_name: nativeDestroy
+    luau_name: null   # Luau: handled by __gc metamethod automatically
+    version: stable
+
+##############################################################################
+# Properties
+##############################################################################
+properties:
+  - name: pattern
+    type: Pattern
+    access: read-only
+    description: the Pattern that was used to create this Matcher
+    jni_name: nativeGetPattern
+    version: stable
+
+  - name: input
+    type: String
+    access: read-only
+    description: the input string currently set on this Matcher
+    jni_name: nativeGetInput
+    version: stable
+
+  - name: hasMatch
+    type: bool
+    access: read-only
+    description: true if the most recent find()/matches()/lookingAt() returned true
+    jni_name: nativeHasMatch
+    version: stable
+
+##############################################################################
+# Exceptions
+##############################################################################
+exceptions:
+  - name: MatcherClosedException
+    parent: IllegalStateException
+    description: Thrown when any method is called on a destroyed Matcher
+    native_code: LUANDRO_MATCHER_CLOSED
+
+  - name: IllegalStateException
+    parent: RuntimeException
+    description: Thrown when accessing match results before a match has been found
+
+##############################################################################
+# Lifecycle
+##############################################################################
+lifecycle_detail: |
+  Pattern.matcher(input)  ──► CREATED
+                                │
+  find() / matches()            │  methods valid
+                                ▼
+                           ACTIVE (has match)
+                                │
+  close() / GC                  │
+                                ▼
+                           DESTROYED  ──► MatcherClosedException on any access
+
+##############################################################################
+# Type mapping
+##############################################################################
+jni_mapping:
+  handle_field: jlong   # stored as jlong in Kotlin object
+  input_type: jstring
+  group_return: jstring
+  int_return: jint
+  bool_return: jboolean
+
+luau_mapping:
+  userdata: "luandro_matcher_t*"
+  metatable: "luandro.Matcher"
+  auto_gc: true
+
+##############################################################################
+# Examples
+##############################################################################
+examples:
+  kotlin: |
+    val pattern = Pattern.compile("""(\d{4})-(\d{2})-(\d{2})""")
+    val matcher = pattern.matcher("Today is 2026-07-28, yesterday was 2026-07-27.")
+
+    while (matcher.find()) {
+        println("Match: ${matcher.group()}")
+        println("  Year:  ${matcher.groupByIndex(1)}")
+        println("  Month: ${matcher.groupByIndex(2)}")
+        println("  Day:   ${matcher.groupByIndex(3)}")
+        println("  at [${matcher.start()}, ${matcher.end()})")
+    }
+
+    // Replace
+    val result = pattern.matcher("Date: 2026-07-28").replaceAll("DATE")
+
+    // AutoCloseable
+    pattern.matcher("test").use { m ->
+        if (m.matches()) println("Full match!")
+    }
+
+  luau: |
+    local pattern = regex.compile([[(\d{4})-(\d{2})-(\d{2})]])
+    local matcher = pattern:matcher("Today is 2026-07-28")
+
+    if matcher:find() then
+        print("Match:", matcher:group())
+        print("Year:", matcher:groupAt(1))
+        print("at", matcher:start(), matcher:end_pos())
+    end
+
+    local result = pattern:matcher("Date: 2026-07-28"):replaceAll("DATE")
+    -- Matcher is auto-destroyed by Lua GC (__gc metamethod)

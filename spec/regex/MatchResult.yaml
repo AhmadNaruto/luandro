@@ -1,0 +1,70 @@
+version: "1.0"
+status: stable
+author: luandro-nrp
+
+package: io.github.luandro.regex
+class: MatchResult
+description: |
+  Result of a single regex match operation.
+  Contains the matched value, position, and captured groups.
+
+lifecycle:
+  created_by: Pattern.find(), Regex.find(), Matcher.find()
+  destroyed_by: MatchResult.close()
+  owner: NativeRuntime
+  handle_type: Long
+
+thread_safety: not_thread_safe
+closeable: true
+
+properties:
+  - name: value
+    description: The entire matched string
+    type: String
+    access: read_only
+    nullable: false
+
+  - name: range
+    description: The start (inclusive) and end (exclusive) index of the match in the input
+    type: IntRange
+    access: read_only
+    nullable: false
+
+  - name: groupCount
+    description: Number of capturing groups in this match
+    type: Int
+    access: read_only
+    nullable: false
+
+methods:
+  - name: groupValue
+    description: Returns the value of the capturing group at the given index (0 = entire match)
+    args:
+      - name: index
+        type: Int
+        nullable: false
+    return:
+      type: String
+      nullable: true
+    example: |
+      val pattern = Regex.compile("(\\d+)-(\\d+)", "")
+      val match = pattern.find("code: 123-456")
+      println(match?.groupValue(0))  // "123-456"
+      println(match?.groupValue(1))  // "123"
+      println(match?.groupValue(2))  // "456"
+
+  - name: close
+    description: Releases native match result resources
+    args: []
+    return:
+      type: Void
+
+luau_mapping:
+  object_name: match_result
+  method_syntax: dot
+  example: |
+    local m = regex.find("(%d+)-(%d+)", "code: 123-456")
+    if m then
+      print(m.value)          -- "123-456"
+      print(m:groupValue(1))  -- "123"
+    end

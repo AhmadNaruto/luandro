@@ -1,0 +1,142 @@
+##############################################################################
+# ASL — API Specification Language
+# File: spec/luau/Luau.yaml
+# Module: io.github.luandro.luau
+# Description: Top-level Luau module index & cross-cutting conventions
+##############################################################################
+
+package: io.github.luandro.luau
+module: Luau
+description: >
+  The `io.github.luandro.luau` module wraps the Luau virtual machine
+  (https://github.com/luau-lang/luau), providing a high-performance, safe
+  scripting engine accessible from Kotlin.
+
+  All Luau execution flows through:
+    LuauVM.create() ──► execute(script) ──► LuauValue
+
+  All native engines are pre-registered as Luau globals:
+    lexsoup  (HTML parser)
+    regex    (regular expressions)
+    js       (JavaScript engine)
+
+classes:
+  - LuauVM:    Virtual machine container — the only public class
+
+##############################################################################
+# Type mapping table (Kotlin ↔ Luau)
+##############################################################################
+type_mapping:
+  - kotlin: Unit / null   ↔ luau: nil
+  - kotlin: Boolean       ↔ luau: boolean
+  - kotlin: Int           ↔ luau: number (integer subset)
+  - kotlin: Long          ↔ luau: number (may lose precision > 2^53)
+  - kotlin: Double        ↔ luau: number
+  - kotlin: String        ↔ luau: string
+  - kotlin: ByteArray     ↔ luau: string (binary)
+  - kotlin: LuauValue     ↔ luau: any
+
+##############################################################################
+# Native dependency
+##############################################################################
+native_dependency:
+  name: Luau
+  url: https://github.com/luau-lang/luau
+  submodule_path: thirdparty/luau
+  version_policy: pin to tag, update manually
+  build_mode: static library (liblauau.a)
+
+##############################################################################
+# Auto-registered native globals (available in every LuauVM)
+##############################################################################
+auto_globals:
+  lexsoup:
+    source: native/lexsoup/
+    api: |
+      lexsoup.parse(html: string) → Document
+  regex:
+    source: native/regex/
+    api: |
+      regex.compile(pattern: string) → Pattern
+      regex.compile(pattern: string, flags: string) → Pattern
+  js:
+    source: native/quickjs/
+    api: |
+      js.newRuntime() → Runtime
+      js.newRuntimeWithLimit(maxBytes: number) → Runtime
+
+##############################################################################
+# Standard Luau globals always available
+##############################################################################
+standard_globals:
+  - print, tostring, tonumber, type, pairs, ipairs, next
+  - table, string, math, os (subset), io (restricted)
+  - coroutine, pcall, xpcall, error, assert
+  - require (disabled by default in sandbox mode)
+  - utf8
+
+##############################################################################
+# Threading rules
+##############################################################################
+threading: |
+  - Each LuauVM has its own lua_State and MUST be used from a single thread.
+  - Do not share a LuauVM across threads.
+  - For multi-thread scenarios: create separate LuauVM instances per thread.
+
+##############################################################################
+# Memory management
+##############################################################################
+memory: |
+  - LuauVM allocates a single lua_State with optional memory limit.
+  - Kotlin: use AutoCloseable (use block) for LuauVM.
+  - LuauValue objects are lightweight wrappers; they do not hold native refs.
+  - Userdata (Document, Element, Pattern, Matcher, etc.) held in Lua state
+    until GC'd via __gc metamethod, which calls native destructor.
+
+##############################################################################
+# Error handling
+##############################################################################
+error_handling: |
+  - Syntax errors at compile time: LuauCompileException
+  - Runtime errors (error() call, pcall failure): LuauRuntimeException
+  - All Lua errors are caught at JNI boundary; C++ exceptions never cross JNI.
+  - Stack traces from Luau are included in the exception message.
+
+##############################################################################
+# Examples
+##############################################################################
+examples:
+  minimal: |
+    import io.github.luandro.luau.LuauVM
+
+    fun main() {
+        LuauVM.create().use { vm ->
+            println(vm.execute("return 6 * 7").toInt())  // 42
+        }
+    }
+
+  all_engines: |
+    LuauVM.create().use { vm ->
+        val script = """
+            -- Use HTML parser
+            local doc = lexsoup.parse([[<html><body><h1>Hello</h1></body></html>]])
+            local title = doc:select("h1"):first():text()
+
+            -- Use regex
+            local m = regex.compile([[(\d+)]]):matcher("abc 42 def")
+            m:find()
+            local num = tonumber(m:group())
+
+            -- Use JavaScript
+            local rt = js.newRuntime()
+            local ctx = rt:newContext()
+            local jsResult = ctx:eval("40 + 2"):toInt()
+            ctx:close()
+            rt:close()
+
+            return title .. " " .. num .. " " .. jsResult
+        """.trimIndent()
+
+        println(vm.execute(script, "demo.luau").toString())
+        // "Hello 42 42"
+    }

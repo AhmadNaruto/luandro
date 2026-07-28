@@ -1,0 +1,207 @@
+##############################################################################
+# ASL — API Specification Language
+# File: spec/js/Runtime.yaml
+# Class: io.github.luandro.js.Runtime
+# Description: Top-level QuickJS-NG JavaScript runtime container
+##############################################################################
+
+package: io.github.luandro.js
+class: Runtime
+description: >
+  The top-level container for the QuickJS-NG JavaScript engine. A Runtime
+  manages memory allocation, the garbage collector, interrupt handlers, and
+  the lifecycle of all Context instances created within it. A single Runtime
+  can host multiple isolated Contexts. Must be closed after use.
+
+native_type: luandro::js::Runtime
+ownership: exclusive
+lifecycle: handle
+thread_safety: NOT_THREAD_SAFE   # Runtime and its Contexts share a single thread
+
+##############################################################################
+# Constructors
+##############################################################################
+constructors:
+  - name: create
+    description: >
+      Creates a new JavaScript Runtime with default memory limits. Use this
+      factory method instead of a public constructor.
+    parameters: []
+    returns:
+      type: Runtime
+    throws:
+      - OutOfMemoryError: if native allocation fails
+    jni_name: nativeCreate
+    luau_name: null   # Luau: js.newRuntime()
+    version: stable
+    is_static: true
+
+  - name: createWithMemoryLimit
+    description: >
+      Creates a new Runtime with a maximum heap size for the JS GC.
+    parameters:
+      - name: maxHeapBytes
+        type: long
+        description: maximum heap size in bytes for the JavaScript GC (>= 1 MB recommended)
+    returns:
+      type: Runtime
+    throws:
+      - OutOfMemoryError: if native allocation fails
+      - IllegalArgumentException: if maxHeapBytes <= 0
+    jni_name: nativeCreateWithMemoryLimit
+    luau_name: null
+    version: stable
+    is_static: true
+
+##############################################################################
+# Methods
+##############################################################################
+methods:
+
+  - name: newContext
+    description: >
+      Creates a new JavaScript execution Context within this Runtime. The
+      context inherits the runtime's GC and memory settings. Multiple contexts
+      can be created; they share the same garbage collector but have separate
+      global objects.
+    parameters: []
+    returns:
+      type: Context
+      description: a new JavaScript execution context
+    throws:
+      - RuntimeClosedException: if the Runtime has been closed
+      - OutOfMemoryError: if native allocation fails
+    jni_name: nativeNewContext
+    luau_name: newContext
+    version: stable
+
+  - name: gc
+    description: >
+      Runs the JavaScript garbage collector manually. Normally the GC runs
+      automatically; call this to reclaim memory immediately.
+    parameters: []
+    returns:
+      type: void
+    throws:
+      - RuntimeClosedException: if the Runtime has been closed
+    jni_name: nativeGc
+    luau_name: gc
+    version: stable
+
+  - name: setMemoryLimit
+    description: >
+      Updates the maximum heap size for the JavaScript GC after runtime creation.
+    parameters:
+      - name: maxHeapBytes
+        type: long
+        description: new maximum heap size in bytes
+    returns:
+      type: void
+    throws:
+      - RuntimeClosedException: if the Runtime has been closed
+      - IllegalArgumentException: if maxHeapBytes <= 0
+    jni_name: nativeSetMemoryLimit
+    luau_name: setMemoryLimit
+    version: stable
+
+  - name: setMaxStackSize
+    description: >
+      Sets the maximum JavaScript call stack depth in bytes.
+    parameters:
+      - name: maxStackBytes
+        type: long
+        description: maximum stack size in bytes (0 = unlimited, use with caution)
+    returns:
+      type: void
+    throws:
+      - RuntimeClosedException: if the Runtime has been closed
+    jni_name: nativeSetMaxStackSize
+    luau_name: setMaxStackSize
+    version: stable
+
+  - name: isLive
+    description: Returns true if this Runtime has not been closed.
+    parameters: []
+    returns:
+      type: bool
+      description: true if alive
+    throws: []
+    jni_name: nativeIsLive
+    luau_name: isLive
+    version: stable
+
+  - name: close
+    description: >
+      Destroys the Runtime and ALL of its Contexts. Any Context or value derived
+      from this runtime becomes invalid after close(). Implements AutoCloseable.
+    parameters: []
+    returns:
+      type: void
+    throws: []
+    jni_name: nativeDestroy
+    luau_name: null   # Luau: auto __gc
+    version: stable
+
+##############################################################################
+# Exceptions
+##############################################################################
+exceptions:
+  - name: RuntimeClosedException
+    parent: IllegalStateException
+    description: Thrown when a method is called on a destroyed Runtime
+
+##############################################################################
+# Lifecycle
+##############################################################################
+lifecycle_detail: |
+  Runtime.create()  ──► CREATED
+                           │
+  newContext() / gc()      │  fully operational
+                           ▼
+                        ACTIVE
+                           │
+  close() / GC             │
+                           ▼
+                        DESTROYED  ──► all child Contexts also destroyed
+
+##############################################################################
+# JNI / Luau mapping
+##############################################################################
+jni_mapping:
+  handle_field: jlong
+
+luau_mapping:
+  userdata: "luandro_js_runtime_t*"
+  metatable: "luandro.js.Runtime"
+  auto_gc: true
+  global_constructor: "js.newRuntime"
+
+##############################################################################
+# Examples
+##############################################################################
+examples:
+  kotlin: |
+    Runtime.create().use { runtime ->
+        runtime.newContext().use { ctx ->
+            val result = ctx.eval("1 + 2")
+            println(result.toInt())  // 3
+        }
+    }
+
+    // With memory limit (64 MB)
+    Runtime.createWithMemoryLimit(64 * 1024 * 1024).use { runtime ->
+        val ctx = runtime.newContext()
+        ctx.eval("console.log('Hello from QuickJS')")
+        ctx.close()
+    }
+
+  luau: |
+    local runtime = js.newRuntime()
+    local ctx = runtime:newContext()
+
+    local result = ctx:eval("1 + 2")
+    print(result)  -- 3
+
+    ctx:close()
+    runtime:close()
+    -- Or let GC handle destruction automatically

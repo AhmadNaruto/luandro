@@ -1,0 +1,377 @@
+##############################################################################
+# ASL — API Specification Language
+# File: spec/js/Context.yaml
+# Class: io.github.luandro.js.Context
+# Description: JavaScript execution context (QuickJS-NG JSContext wrapper)
+##############################################################################
+
+package: io.github.luandro.js
+class: Context
+description: >
+  A JavaScript execution context created by a Runtime. Each Context has its
+  own global object, built-in objects (Array, Object, Promise, etc.), and
+  module registry. Contexts within the same Runtime share the GC but are
+  otherwise isolated. Scripts, modules, and values are always tied to a specific
+  Context. Must be closed after use.
+
+native_type: luandro::js::Context
+ownership: exclusive
+lifecycle: handle
+thread_safety: NOT_THREAD_SAFE
+parent: Runtime   # must not outlive its Runtime
+
+##############################################################################
+# Constructors (obtained via Runtime.newContext())
+##############################################################################
+constructors: []
+
+##############################################################################
+# Methods
+##############################################################################
+methods:
+
+  - name: eval
+    description: >
+      Evaluates a JavaScript expression or script string and returns the
+      resulting value. Throws on syntax or runtime errors.
+    parameters:
+      - name: code
+        type: String
+        description: JavaScript source code to evaluate
+    returns:
+      type: JSValue
+      description: the result of evaluation
+    throws:
+      - JSException: on JavaScript syntax or runtime errors
+      - ContextClosedException: if the Context has been closed
+    jni_name: nativeEval
+    luau_name: eval
+    version: stable
+
+  - name: evalModule
+    description: >
+      Evaluates a JavaScript ES Module (type="module"). Returns a Promise that
+      resolves when the module's top-level await is complete.
+    parameters:
+      - name: code
+        type: String
+        description: ES Module source code
+      - name: filename
+        type: String
+        description: virtual filename used in stack traces and import resolution
+    returns:
+      type: JSValue
+      description: a JSValue wrapping a Promise
+    throws:
+      - JSException: on syntax or runtime errors
+      - ContextClosedException: if the Context has been closed
+    jni_name: nativeEvalModule
+    luau_name: evalModule
+    version: stable
+
+  - name: setGlobal
+    description: >
+      Sets a named property on the JavaScript global object, making a Kotlin
+      value accessible from JavaScript.
+    parameters:
+      - name: name
+        type: String
+        description: property name in the global scope
+      - name: value
+        type: JSValue
+        description: the value to set
+    returns:
+      type: void
+    throws:
+      - ContextClosedException: if the Context has been closed
+      - JSException: if setting the property fails
+    jni_name: nativeSetGlobal
+    luau_name: setGlobal
+    version: stable
+
+  - name: getGlobal
+    description: >
+      Gets a named property from the JavaScript global object.
+    parameters:
+      - name: name
+        type: String
+        description: property name in the global scope
+    returns:
+      type: JSValue
+      description: the value, or JSValue.undefined() if not set
+    throws:
+      - ContextClosedException: if the Context has been closed
+    jni_name: nativeGetGlobal
+    luau_name: getGlobal
+    version: stable
+
+  - name: parseJSON
+    description: >
+      Parses a JSON string and returns the corresponding JSValue (object, array,
+      string, number, bool, or null).
+    parameters:
+      - name: json
+        type: String
+        description: valid JSON string
+    returns:
+      type: JSValue
+      description: parsed JavaScript value
+    throws:
+      - JSException: if the JSON is malformed
+      - ContextClosedException: if the Context has been closed
+    jni_name: nativeParseJSON
+    luau_name: parseJSON
+    version: stable
+
+  - name: stringifyJSON
+    description: >
+      Converts a JSValue to its JSON string representation.
+    parameters:
+      - name: value
+        type: JSValue
+        description: value to stringify (must be JSON-serializable)
+      - name: indent
+        type: int
+        description: number of spaces for indentation (0 = compact)
+    returns:
+      type: String
+      description: JSON string representation
+    throws:
+      - JSException: if the value contains circular references or non-serializable types
+      - ContextClosedException: if the Context has been closed
+    jni_name: nativeStringifyJSON
+    luau_name: stringifyJSON
+    version: stable
+
+  - name: newObject
+    description: >
+      Creates a new empty JavaScript object ({}) in this Context.
+    parameters: []
+    returns:
+      type: JSValue
+      description: a new JS object
+    throws:
+      - ContextClosedException: if the Context has been closed
+    jni_name: nativeNewObject
+    luau_name: newObject
+    version: stable
+
+  - name: newArray
+    description: >
+      Creates a new empty JavaScript array ([]) in this Context.
+    parameters: []
+    returns:
+      type: JSValue
+      description: a new JS array
+    throws:
+      - ContextClosedException: if the Context has been closed
+    jni_name: nativeNewArray
+    luau_name: newArray
+    version: stable
+
+  - name: newString
+    description: Creates a JSValue wrapping a string.
+    parameters:
+      - name: value
+        type: String
+    returns:
+      type: JSValue
+    throws:
+      - ContextClosedException: if the Context has been closed
+    jni_name: nativeNewString
+    luau_name: newString
+    version: stable
+
+  - name: newInt
+    description: Creates a JSValue wrapping a 32-bit integer.
+    parameters:
+      - name: value
+        type: int
+    returns:
+      type: JSValue
+    throws:
+      - ContextClosedException: if the Context has been closed
+    jni_name: nativeNewInt
+    luau_name: newInt
+    version: stable
+
+  - name: newDouble
+    description: Creates a JSValue wrapping a double.
+    parameters:
+      - name: value
+        type: double
+    returns:
+      type: JSValue
+    throws:
+      - ContextClosedException: if the Context has been closed
+    jni_name: nativeNewDouble
+    luau_name: newDouble
+    version: stable
+
+  - name: newBool
+    description: Creates a JSValue wrapping a boolean.
+    parameters:
+      - name: value
+        type: bool
+    returns:
+      type: JSValue
+    throws:
+      - ContextClosedException: if the Context has been closed
+    jni_name: nativeNewBool
+    luau_name: newBool
+    version: stable
+
+  - name: undefined
+    description: Returns the JS undefined singleton value in this context.
+    parameters: []
+    returns:
+      type: JSValue
+    throws:
+      - ContextClosedException: if the Context has been closed
+    jni_name: nativeUndefined
+    luau_name: undefined
+    is_static: false
+    version: stable
+
+  - name: jsNull
+    description: Returns the JS null singleton value in this context.
+    parameters: []
+    returns:
+      type: JSValue
+    throws:
+      - ContextClosedException: if the Context has been closed
+    jni_name: nativeNull
+    luau_name: "null_val"
+    version: stable
+
+  - name: executePendingJobs
+    description: >
+      Runs all pending microtasks (Promise callbacks, etc.) in this context.
+      Must be called after eval/evalModule to ensure Promises resolve.
+    parameters: []
+    returns:
+      type: int
+      description: number of jobs executed (-1 if error)
+    throws:
+      - JSException: if a pending job throws an unhandled exception
+      - ContextClosedException: if the Context has been closed
+    jni_name: nativeExecutePendingJobs
+    luau_name: executePendingJobs
+    version: stable
+
+  - name: setModuleLoader
+    description: >
+      Registers a callback that resolves ES module import paths and returns
+      source code. Called by QuickJS when `import` statements are encountered.
+    parameters:
+      - name: loader
+        type: ModuleLoader
+        description: callback interface to resolve module name + source
+    returns:
+      type: void
+    throws:
+      - ContextClosedException: if the Context has been closed
+    jni_name: nativeSetModuleLoader
+    luau_name: setModuleLoader
+    version: stable
+
+  - name: close
+    description: >
+      Destroys this Context and all JSValues associated with it. Implements
+      AutoCloseable. After close(), all JSValues from this context are invalid.
+    parameters: []
+    returns:
+      type: void
+    throws: []
+    jni_name: nativeDestroy
+    luau_name: null   # auto __gc
+    version: stable
+
+##############################################################################
+# Types referenced
+##############################################################################
+related_types:
+  - JSValue:   See JSValue.yaml
+  - Module:    See Module.yaml
+  - ModuleLoader: functional interface (String name, String baseName) → String source
+
+##############################################################################
+# Exceptions
+##############################################################################
+exceptions:
+  - name: ContextClosedException
+    parent: IllegalStateException
+    description: Thrown when a method is called on a destroyed Context
+
+  - name: JSException
+    parent: RuntimeException
+    description: >
+      Wraps a JavaScript error. Carries message, stack trace (as string),
+      and the raw JSValue of the error object.
+
+##############################################################################
+# Lifecycle
+##############################################################################
+lifecycle_detail: |
+  Runtime.newContext()  ──► CREATED
+                              │
+  eval() / setGlobal()        │  fully operational
+                              ▼
+                           ACTIVE
+                              │
+  close() / Runtime.close()   │
+                              ▼
+                           DESTROYED  ──► ContextClosedException on any access
+
+##############################################################################
+# JNI / Luau mapping
+##############################################################################
+jni_mapping:
+  handle_field: jlong
+
+luau_mapping:
+  userdata: "luandro_js_context_t*"
+  metatable: "luandro.js.Context"
+  auto_gc: true
+
+##############################################################################
+# Examples
+##############################################################################
+examples:
+  kotlin: |
+    Runtime.create().use { runtime ->
+        runtime.newContext().use { ctx ->
+            // Evaluate expression
+            val sum = ctx.eval("1 + 2").toInt()
+            println(sum)  // 3
+
+            // Expose Kotlin value to JS
+            ctx.setGlobal("version", ctx.newString("1.0.0"))
+
+            // Parse and stringify JSON
+            val obj = ctx.parseJSON("""{"key": "value"}""")
+            println(ctx.stringifyJSON(obj, indent = 2))
+
+            // Run promises
+            ctx.evalModule("import './app.js'", "main.js")
+            ctx.executePendingJobs()
+        }
+    }
+
+  luau: |
+    local runtime = js.newRuntime()
+    local ctx = runtime:newContext()
+
+    -- Evaluate JS
+    local result = ctx:eval("40 + 2")
+    print(result)  -- 42
+
+    -- Expose Luau value to JS global scope
+    ctx:setGlobal("luauVersion", ctx:newString("0.6"))
+
+    -- JSON
+    local obj = ctx:parseJSON('{"hello":"world"}')
+    print(ctx:stringifyJSON(obj, 2))
+
+    ctx:close()
+    runtime:close()

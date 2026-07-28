@@ -1,0 +1,123 @@
+version: "1.0"
+status: stable
+author: luandro-nrp
+
+package: io.github.luandro.regex
+class: Pattern
+description: |
+  A compiled regular expression pattern backed by jsregexp.
+  Reuse a Pattern for multiple matching operations to avoid recompilation.
+
+lifecycle:
+  created_by: Regex.compile(pattern, flags)
+  destroyed_by: Pattern.close()
+  owner: NativeRuntime
+  handle_type: Long
+
+thread_safety: thread_safe
+closeable: true
+
+properties:
+  - name: pattern
+    description: The original pattern string used to compile this Pattern
+    type: String
+    access: read_only
+    nullable: false
+
+  - name: flags
+    description: The flags string used to compile this Pattern
+    type: String
+    access: read_only
+    nullable: false
+
+methods:
+  - name: matcher
+    description: Creates a Matcher for the given input string
+    args:
+      - name: input
+        type: String
+        nullable: false
+    return:
+      type: Handle
+      handle_class: Matcher
+      nullable: false
+    example: |
+      val matcher = pattern.matcher("hello world 123")
+
+  - name: matches
+    description: Returns true if the entire input matches this pattern
+    args:
+      - name: input
+        type: String
+        nullable: false
+    return:
+      type: Boolean
+      nullable: false
+
+  - name: find
+    description: Finds the first match in the input
+    args:
+      - name: input
+        type: String
+        nullable: false
+    return:
+      type: Handle
+      handle_class: MatchResult
+      nullable: true
+
+  - name: findAll
+    description: Finds all matches in the input
+    args:
+      - name: input
+        type: String
+        nullable: false
+    return:
+      type: List<Handle>
+      handle_class: MatchResult
+      nullable: false
+
+  - name: replace
+    description: Replaces first match in input with replacement
+    args:
+      - name: input
+        type: String
+        nullable: false
+      - name: replacement
+        type: String
+        nullable: false
+    return:
+      type: String
+      nullable: false
+
+  - name: replaceAll
+    description: Replaces all matches in input with replacement
+    args:
+      - name: input
+        type: String
+        nullable: false
+      - name: replacement
+        type: String
+        nullable: false
+    return:
+      type: String
+      nullable: false
+
+  - name: split
+    description: Splits input around matches
+    args:
+      - name: input
+        type: String
+        nullable: false
+    return:
+      type: List<String>
+      nullable: false
+
+  - name: close
+    description: Releases native pattern resources
+    args: []
+    return:
+      type: Void
+
+luau_mapping:
+  object_name: pattern
+  method_syntax: colon

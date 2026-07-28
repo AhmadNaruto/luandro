@@ -1,0 +1,217 @@
+version: "1.0"
+status: stable
+author: luandro-nrp
+
+package: io.github.luandro.lexsoup
+class: Element
+description: |
+  Represents a single HTML DOM element backed by Lexbor.
+  Provides access to attributes, children, text, and HTML content.
+  All operations execute entirely in native C++ code.
+
+lifecycle:
+  created_by: Document.selectFirst(), Elements.first(), Document.getElementById()
+  destroyed_by: parent Document.close()
+  owner: NativeRuntime (owned by parent Document)
+  handle_type: Long
+  note: Do NOT close() an Element directly — it is owned by its Document
+
+thread_safety: not_thread_safe
+closeable: false
+
+properties:
+  - name: tagName
+    description: The element's tag name in lowercase (e.g. "div", "p", "a")
+    type: String
+    access: read_only
+    nullable: false
+
+  - name: id
+    description: The element's id attribute value, or empty string
+    type: String
+    access: read_write
+    nullable: false
+
+  - name: className
+    description: The element's class attribute value (space-separated), or empty string
+    type: String
+    access: read_write
+    nullable: false
+
+  - name: childrenCount
+    description: Number of direct child elements (not text nodes)
+    type: Int
+    access: read_only
+    nullable: false
+
+methods:
+  - name: text
+    description: Returns the combined text content of this element and all its children (strips HTML)
+    args: []
+    return:
+      type: String
+      nullable: false
+    example: |
+      val text = element.text()  // "Hello world"
+
+  - name: ownText
+    description: Returns the text directly in this element, excluding children
+    args: []
+    return:
+      type: String
+      nullable: false
+
+  - name: html
+    description: Returns the inner HTML of this element
+    args: []
+    return:
+      type: String
+      nullable: false
+    example: |
+      val html = element.html()  // "<b>Hello</b> world"
+
+  - name: outerHtml
+    description: Returns the outer HTML of this element (including the element's own tag)
+    args: []
+    return:
+      type: String
+      nullable: false
+    example: |
+      val outer = element.outerHtml()  // "<p><b>Hello</b> world</p>"
+
+  - name: attr
+    description: Returns the value of the named attribute, or empty string if absent
+    args:
+      - name: attributeName
+        type: String
+        nullable: false
+    return:
+      type: String
+      nullable: false
+    example: |
+      val href = element.attr("href")  // "https://example.com"
+
+  - name: hasAttr
+    description: Returns true if this element has the named attribute
+    args:
+      - name: attributeName
+        type: String
+        nullable: false
+    return:
+      type: Boolean
+      nullable: false
+
+  - name: attr_set
+    description: Sets the value of the named attribute
+    args:
+      - name: attributeName
+        type: String
+        nullable: false
+      - name: value
+        type: String
+        nullable: false
+    return:
+      type: Void
+
+  - name: removeAttr
+    description: Removes the named attribute from this element
+    args:
+      - name: attributeName
+        type: String
+        nullable: false
+    return:
+      type: Void
+
+  - name: select
+    description: Finds descendant elements matching the CSS selector
+    args:
+      - name: cssQuery
+        type: String
+        nullable: false
+    return:
+      type: Handle
+      handle_class: Elements
+      nullable: false
+    throws:
+      - type: InvalidSelectorException
+
+  - name: selectFirst
+    description: Finds the first descendant element matching the CSS selector
+    args:
+      - name: cssQuery
+        type: String
+        nullable: false
+    return:
+      type: Handle
+      handle_class: Element
+      nullable: true
+
+  - name: parent
+    description: Returns the parent element, or null if this is the root
+    args: []
+    return:
+      type: Handle
+      handle_class: Element
+      nullable: true
+
+  - name: children
+    description: Returns all direct child elements
+    args: []
+    return:
+      type: Handle
+      handle_class: Elements
+      nullable: false
+
+  - name: child
+    description: Returns the child element at the given index
+    args:
+      - name: index
+        type: Int
+        nullable: false
+    return:
+      type: Handle
+      handle_class: Element
+      nullable: true
+
+  - name: nextSibling
+    description: Returns the next sibling element, or null
+    args: []
+    return:
+      type: Handle
+      handle_class: Element
+      nullable: true
+
+  - name: previousSibling
+    description: Returns the previous sibling element, or null
+    args: []
+    return:
+      type: Handle
+      handle_class: Element
+      nullable: true
+
+  - name: classNames
+    description: Returns the set of class names on this element
+    args: []
+    return:
+      type: List<String>
+      nullable: false
+
+  - name: hasClass
+    description: Returns true if this element has the given CSS class
+    args:
+      - name: className
+        type: String
+        nullable: false
+    return:
+      type: Boolean
+      nullable: false
+
+luau_mapping:
+  object_name: element
+  method_syntax: colon
+  example: |
+    local el = doc:selectFirst("h1")
+    if el then
+      print(el:text())
+      print(el:attr("class"))
+    end

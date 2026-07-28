@@ -1,0 +1,161 @@
+version: "1.0"
+status: stable
+author: luandro-nrp
+
+package: io.github.luandro.lexsoup
+class: Document
+description: |
+  Represents a parsed HTML document backed by Lexbor.
+  Provides a JSoup-compatible API for DOM traversal, querying, and serialization.
+  All DOM operations execute entirely in native C++ code.
+  Kotlin only stores the native handle (Long).
+
+lifecycle:
+  created_by: LexSoup.parse(html)
+  destroyed_by: Document.close() or garbage collection
+  owner: NativeRuntime
+  handle_type: Long
+
+thread_safety: not_thread_safe
+closeable: true
+
+static_functions: []
+
+methods:
+  - name: title
+    description: Returns the text content of the <title> element, or empty string if absent
+    args: []
+    return:
+      type: String
+      nullable: false
+    example: |
+      val title = doc.title()  // "My Page Title"
+
+  - name: select
+    description: |
+      Finds all elements matching the given CSS selector.
+      Returns an Elements collection (may be empty, never null).
+    args:
+      - name: cssQuery
+        type: String
+        nullable: false
+        description: CSS selector (e.g. "div.content", "a[href]", "p > span")
+    return:
+      type: Handle
+      handle_class: Elements
+      nullable: false
+    throws:
+      - type: InvalidSelectorException
+        description: If the CSS selector syntax is invalid
+    example: |
+      val links = doc.select("a[href]")
+      val paragraphs = doc.select("p")
+
+  - name: selectFirst
+    description: Returns the first element matching the CSS selector, or null
+    args:
+      - name: cssQuery
+        type: String
+        nullable: false
+    return:
+      type: Handle
+      handle_class: Element
+      nullable: true
+    throws:
+      - type: InvalidSelectorException
+    example: |
+      val firstDiv = doc.selectFirst("div.content")
+
+  - name: getElementById
+    description: Finds an element by its id attribute
+    args:
+      - name: id
+        type: String
+        nullable: false
+    return:
+      type: Handle
+      handle_class: Element
+      nullable: true
+    example: |
+      val header = doc.getElementById("main-header")
+
+  - name: getElementsByTag
+    description: Finds all elements with the given tag name
+    args:
+      - name: tag
+        type: String
+        nullable: false
+    return:
+      type: Handle
+      handle_class: Elements
+      nullable: false
+    example: |
+      val allDivs = doc.getElementsByTag("div")
+
+  - name: getElementsByClass
+    description: Finds all elements with the given CSS class name
+    args:
+      - name: className
+        type: String
+        nullable: false
+    return:
+      type: Handle
+      handle_class: Elements
+      nullable: false
+    example: |
+      val articles = doc.getElementsByClass("article")
+
+  - name: body
+    description: Returns the <body> element, or null if not present
+    args: []
+    return:
+      type: Handle
+      handle_class: Element
+      nullable: true
+    example: |
+      val body = doc.body()
+
+  - name: head
+    description: Returns the <head> element, or null if not present
+    args: []
+    return:
+      type: Handle
+      handle_class: Element
+      nullable: true
+
+  - name: outerHtml
+    description: Serializes the entire document to an HTML string
+    args: []
+    return:
+      type: String
+      nullable: false
+    example: |
+      val html = doc.outerHtml()
+
+  - name: text
+    description: Returns the combined text content of the document (no HTML tags)
+    args: []
+    return:
+      type: String
+      nullable: false
+    example: |
+      val text = doc.text()  // "Hello World"
+
+  - name: close
+    description: Destroys the native document and releases all memory
+    args: []
+    return:
+      type: Void
+    example: |
+      doc.close()  // or use try-with-resources
+
+luau_mapping:
+  module_name: lexbor
+  object_name: document
+  constructor: lexbor.parse(html)
+  method_syntax: colon
+  example: |
+    local doc = lexbor.parse(html)
+    local title = doc:title()
+    local links = doc:select("a")
+    doc:close()

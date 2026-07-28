@@ -1,0 +1,328 @@
+##############################################################################
+# ASL — API Specification Language
+# File: spec/luau/VM.yaml
+# Class: io.github.luandro.luau.LuauVM
+# Description: Luau virtual machine — top-level Luau engine container
+##############################################################################
+
+package: io.github.luandro.luau
+class: LuauVM
+description: >
+  The top-level container for the Luau virtual machine. Wraps a lua_State and
+  provides the public API for executing Luau scripts, managing global state,
+  loading native modules, and compiling scripts. A LuauVM automatically
+  registers all native modules (lexsoup, regex, js) on creation.
+
+  The LuauVM is the only public API for Luau; all operations go through it.
+  All native engines (LexSoup, Regex, QuickJS) are available as Luau globals
+  without any user-side configuration.
+
+native_type: luandro::luau::LuauVM
+ownership: exclusive
+lifecycle: handle
+thread_safety: NOT_THREAD_SAFE
+
+##############################################################################
+# Constructors
+##############################################################################
+constructors:
+
+  - name: create
+    description: >
+      Creates a new LuauVM with all native modules pre-registered. The default
+      memory limit is unlimited; use createWithMemoryLimit for sandboxing.
+    is_static: true
+    parameters: []
+    returns:
+      type: LuauVM
+    throws:
+      - OutOfMemoryError: if native allocation fails
+    jni_name: nativeCreate
+    version: stable
+
+  - name: createWithMemoryLimit
+    description: >
+      Creates a new LuauVM with a maximum memory allocation limit. Scripts that
+      exceed this limit will receive a Lua memory error.
+    is_static: true
+    parameters:
+      - name: maxHeapBytes
+        type: long
+        description: maximum heap size in bytes
+    returns:
+      type: LuauVM
+    throws:
+      - OutOfMemoryError: if native allocation fails
+      - IllegalArgumentException: if maxHeapBytes <= 0
+    jni_name: nativeCreateWithMemoryLimit
+    version: stable
+
+##############################################################################
+# Script execution
+##############################################################################
+methods:
+
+  - name: execute
+    description: >
+      Compiles and executes a Luau script string in the global environment.
+      Returns the result of the last expression in the script (or null/Unit
+      if the script has no return value).
+    parameters:
+      - name: script
+        type: String
+        description: Luau source code to compile and run
+      - name: chunkName
+        type: String
+        description: name for error messages and stack traces (e.g. "main.luau")
+        default: "=(chunk)"
+    returns:
+      type: LuauValue
+      description: the return value of the script, or LuauValue.nil() if none
+    throws:
+      - LuauCompileException: if the script has syntax errors
+      - LuauRuntimeException: if the script throws an error at runtime
+      - VMClosedException: if the VM has been closed
+    jni_name: nativeExecute
+    version: stable
+
+  - name: compile
+    description: >
+      Compiles a Luau script to bytecode without executing it. Returns the
+      bytecode as a byte array.
+    parameters:
+      - name: script
+        type: String
+        description: Luau source code
+      - name: chunkName
+        type: String
+        description: name for error messages
+        default: "=(chunk)"
+    returns:
+      type: ByteArray
+      description: compiled Luau bytecode
+    throws:
+      - LuauCompileException: if the script has syntax errors
+      - VMClosedException: if the VM has been closed
+    jni_name: nativeCompile
+    version: stable
+
+  - name: executeCompiled
+    description: >
+      Executes a precompiled Luau bytecode chunk.
+    parameters:
+      - name: bytecode
+        type: ByteArray
+        description: compiled bytecode from compile()
+      - name: chunkName
+        type: String
+        description: name for error messages and stack traces
+        default: "=(chunk)"
+    returns:
+      type: LuauValue
+      description: return value of the script
+    throws:
+      - LuauRuntimeException: if execution throws a Lua error
+      - VMClosedException: if the VM has been closed
+    jni_name: nativeExecuteCompiled
+    version: stable
+
+##############################################################################
+# Global state
+##############################################################################
+
+  - name: setGlobal
+    description: Sets a named global variable in the VM's global environment.
+    parameters:
+      - name: name
+        type: String
+        description: global variable name
+      - name: value
+        type: LuauValue
+        description: value to set
+    returns:
+      type: void
+    throws:
+      - VMClosedException: if the VM has been closed
+    jni_name: nativeSetGlobal
+    version: stable
+
+  - name: getGlobal
+    description: Gets a named global variable from the VM's global environment.
+    parameters:
+      - name: name
+        type: String
+        description: global variable name
+    returns:
+      type: LuauValue
+      description: the global value, or LuauValue.nil() if not set
+    throws:
+      - VMClosedException: if the VM has been closed
+    jni_name: nativeGetGlobal
+    version: stable
+
+  - name: removeGlobal
+    description: Removes (sets to nil) a named global variable.
+    parameters:
+      - name: name
+        type: String
+        description: global variable name
+    returns:
+      type: void
+    throws:
+      - VMClosedException: if the VM has been closed
+    jni_name: nativeRemoveGlobal
+    version: stable
+
+##############################################################################
+# Native module registration
+##############################################################################
+
+  - name: registerModule
+    description: >
+      Registers a native Kotlin object as a Luau global module table. Each
+      method of the KotlinModule interface becomes a function in the table.
+      This is how additional custom modules beyond the built-ins are added.
+    parameters:
+      - name: name
+        type: String
+        description: global name in Luau (e.g. "mylib")
+      - name: module
+        type: KotlinModule
+        description: the module definition
+    returns:
+      type: void
+    throws:
+      - VMClosedException: if the VM has been closed
+      - IllegalArgumentException: if name is empty or conflicts with built-in
+    jni_name: nativeRegisterModule
+    version: experimental
+
+##############################################################################
+# Built-in modules (auto-registered on LuauVM.create())
+##############################################################################
+builtin_modules:
+  - global: lexsoup
+    description: HTML parsing (LexSoup engine)
+    key_functions:
+      - "lexsoup.parse(html)"
+  - global: regex
+    description: Regular expressions (jsregexp engine)
+    key_functions:
+      - "regex.compile(pattern)"
+      - "regex.compile(pattern, flags)"
+  - global: js
+    description: JavaScript execution (QuickJS-NG engine)
+    key_functions:
+      - "js.newRuntime()"
+      - "js.newRuntimeWithLimit(bytes)"
+
+##############################################################################
+# LuauValue type
+##############################################################################
+related_types:
+  - name: LuauValue
+    description: >
+      Tagged union representing any Luau value (nil, bool, number, string,
+      table, userdata, function). Provides toBoolean(), toDouble(), toInt(),
+      toString(), isNil(), isTable(), isBool(), isNumber(), isString(),
+      isFunction(), isUserdata() inspection methods.
+    jni_mapping:
+      nil:      null / LuauValue.nil()
+      bool:     jboolean / LuauValue.of(bool)
+      number:   jdouble / LuauValue.of(double)
+      string:   jstring / LuauValue.of(String)
+      table:    opaque handle, LuauValue.table(handle)
+      userdata: opaque handle, LuauValue.userdata(handle)
+
+  - name: KotlinModule
+    description: >
+      Interface for registering custom Kotlin modules into LuauVM.
+      Implement provide() to return a map of function names to lambdas.
+
+##############################################################################
+# Exceptions
+##############################################################################
+exceptions:
+  - name: VMClosedException
+    parent: IllegalStateException
+    description: Thrown when any method is called on a closed LuauVM
+
+  - name: LuauCompileException
+    parent: RuntimeException
+    description: >
+      Thrown when Luau source has syntax errors. Contains the error message
+      with line number.
+
+  - name: LuauRuntimeException
+    parent: RuntimeException
+    description: >
+      Thrown when a Luau script throws an unhandled error. Contains the
+      Luau error message and optional stack trace.
+
+##############################################################################
+# Lifecycle
+##############################################################################
+lifecycle_detail: |
+  LuauVM.create()  ──► CREATED
+    │  (auto-registers: lexsoup, regex, js modules)
+    │
+  execute() / compile()  fully operational
+    │
+  close() / GC
+    │
+    ▼
+  DESTROYED  ──► VMClosedException on any access
+
+##############################################################################
+# JNI mapping
+##############################################################################
+jni_mapping:
+  handle_field: jlong
+  script_type: jstring
+  bytecode_type: jbyteArray
+  global_name_type: jstring
+
+##############################################################################
+# Examples
+##############################################################################
+examples:
+  kotlin_simple: |
+    LuauVM.create().use { vm ->
+        // Execute script
+        val result = vm.execute("return 6 * 7", "math.luau")
+        println(result.toInt())  // 42
+
+        // Set a global variable
+        vm.setGlobal("appName", LuauValue.of("NRP"))
+
+        // Use the lexsoup global from Luau
+        val script = """
+            local doc = lexsoup.parse("<h1>Hello</h1>")
+            return doc:title()
+        """.trimIndent()
+        println(vm.execute(script, "test.luau").toString())
+
+        // Use the regex global from Luau
+        val regexScript = """
+            local m = regex.compile("\\d+"):matcher("abc123")
+            m:find()
+            return m:group()
+        """.trimIndent()
+        println(vm.execute(regexScript, "regex.luau").toString())  // "123"
+    }
+
+  kotlin_bytecode: |
+    LuauVM.create().use { vm ->
+        val bytecode = vm.compile("return 1 + 1", "add.luau")
+        // bytecode can be cached / loaded from disk
+        val result = vm.executeCompiled(bytecode, "add.luau")
+        println(result.toInt())  // 2
+    }
+
+  kotlin_globals: |
+    LuauVM.create().use { vm ->
+        vm.setGlobal("platform", LuauValue.of("Android"))
+        vm.setGlobal("version", LuauValue.of(1.0))
+        val result = vm.execute("return platform .. ' v' .. tostring(version)", "main.luau")
+        println(result.toString())  // Android v1.0
+    }

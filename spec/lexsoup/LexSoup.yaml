@@ -1,0 +1,60 @@
+version: "1.0"
+status: stable
+author: luandro-nrp
+
+package: io.github.luandro.lexsoup
+class: LexSoup
+description: |
+  Entry point for the LexSoup HTML parser.
+  Provides factory methods to parse HTML into Document objects.
+  Backed entirely by Lexbor native library.
+
+lifecycle:
+  owner: NativeRuntime
+  note: Static factory class — no lifecycle
+
+thread_safety: thread_safe
+
+static_functions:
+  - name: parse
+    description: Parse an HTML string and return a Document
+    args:
+      - name: html
+        type: String
+        nullable: false
+        description: Raw HTML string to parse
+    return:
+      type: Handle
+      handle_class: Document
+      nullable: false
+    throws:
+      - type: ParseException
+        description: If HTML cannot be parsed
+    example: |
+      val doc = LexSoup.parse("<html><body><p>Hello</p></body></html>")
+      println(doc.title())
+      doc.close()
+
+  - name: parseFragment
+    description: Parse an HTML fragment (without full document structure)
+    args:
+      - name: html
+        type: String
+        nullable: false
+        description: HTML fragment string
+      - name: contextTag
+        type: String
+        nullable: false
+        description: Context tag for fragment parsing (e.g. "div", "body")
+    return:
+      type: Handle
+      handle_class: Document
+      nullable: false
+    throws:
+      - type: ParseException
+    example: |
+      val doc = LexSoup.parseFragment("<p>Hello <b>world</b></p>", "body")
+
+luau_mapping:
+  module_name: lexbor
+  constructor: lexbor.parse(html)

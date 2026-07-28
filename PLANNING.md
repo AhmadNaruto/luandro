@@ -130,8 +130,8 @@ Desenvolver uma **Native Runtime Platform (NRP)** modular e de alta performance 
 
 | Fase | Nome | Status | Descrição |
 |------|------|--------|-----------|
-| **1** | Architecture Design | ⬜ TODO | Documentação completa da arquitetura (sem código-fonte) |
-| **2** | Public API Specification | ⬜ TODO | Especificar todas as APIs públicas Kotlin, Native e Luau |
+| **1** | Architecture Design | ✅ DONE | Documentação completa da arquitetura (sem código-fonte) |
+| **2** | Public API Specification | ✅ DONE | Especificar todas as APIs públicas Kotlin, Native e Luau |
 
 ### ⚙️ Fases de Implementação
 
@@ -510,10 +510,10 @@ spec/
 
 ```
 Fases de Preparação:    [ 5/5 ]  (100%)
-Fases de Design:        [ 0/2 ]  (  0%)
+Fases de Design:        [ 2/2 ]  (100%)
 Fases de Implementação: [ 0/9 ]  (  0%)
 ─────────────────────────────────────
-TOTAL:                  [ 5/16]  ( 31%)
+TOTAL:                  [ 7/16]  ( 44%)
 ```
 
 ---

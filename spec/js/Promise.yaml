@@ -1,0 +1,268 @@
+##############################################################################
+# ASL — API Specification Language
+# File: spec/js/Promise.yaml
+# Class: io.github.luandro.js.Promise
+# Description: JavaScript Promise wrapper with Kotlin coroutine bridge
+##############################################################################
+
+package: io.github.luandro.js
+class: Promise
+description: >
+  Provides utilities for working with JavaScript Promises from Kotlin. A Promise
+  wrapper is obtained from a JSValue that represents a Promise object. The class
+  provides synchronous inspection, manual resolve/reject wiring, and a coroutine
+  suspend bridge for awaiting JS Promise resolution from Kotlin coroutines.
+
+  Under the hood this is a thin wrapper; the actual Promise lifecycle is managed
+  by the QuickJS microtask queue (executePendingJobs).
+
+native_type: luandro::js::Promise
+ownership: context_owned
+lifecycle: handle
+thread_safety: NOT_THREAD_SAFE
+
+##############################################################################
+# Constructors / factory
+##############################################################################
+constructors:
+
+  - name: from
+    description: >
+      Wraps a JSValue that is known to be a JavaScript Promise. Throws if the
+      value is not a Promise object.
+    is_static: true
+    parameters:
+      - name: ctx
+        type: Context
+        description: the owning context
+      - name: value
+        type: JSValue
+        description: a JSValue of type object representing a Promise
+    returns:
+      type: Promise
+    throws:
+      - IllegalArgumentException: if value is not a Promise
+    jni_name: nativeFromJSValue
+    luau_name: null
+    version: stable
+
+  - name: create
+    description: >
+      Creates a new unresolved Promise and returns both the Promise and its
+      resolve/reject callbacks as a PromiseCapability.
+    is_static: true
+    parameters:
+      - name: ctx
+        type: Context
+        description: the owning context
+    returns:
+      type: PromiseCapability
+    throws:
+      - ContextClosedException: if the context has been closed
+    jni_name: nativeCreate
+    luau_name: null
+    version: stable
+
+##############################################################################
+# Supporting type: PromiseCapability
+##############################################################################
+related_types:
+  - name: PromiseCapability
+    description: >
+      A data class holding a newly created Promise plus its resolve and reject
+      functions. Returned by Promise.create().
+    fields:
+      - name: promise
+        type: Promise
+        description: the promise object
+      - name: resolve
+        type: JSValue
+        description: the resolve callback (call with a JSValue to resolve)
+      - name: reject
+        type: JSValue
+        description: the reject callback (call with a JSValue/error to reject)
+
+##############################################################################
+# Methods
+##############################################################################
+methods:
+
+  - name: isPending
+    description: Returns true if the Promise has not yet resolved or rejected.
+    parameters: []
+    returns: { type: bool }
+    throws:
+      - PromiseClosedException: if the Promise handle is invalid
+    jni_name: nativeIsPending
+    luau_name: isPending
+    version: stable
+
+  - name: isFulfilled
+    description: Returns true if the Promise has resolved successfully.
+    parameters: []
+    returns: { type: bool }
+    throws:
+      - PromiseClosedException: if the Promise handle is invalid
+    jni_name: nativeIsFulfilled
+    luau_name: isFulfilled
+    version: stable
+
+  - name: isRejected
+    description: Returns true if the Promise was rejected with an error.
+    parameters: []
+    returns: { type: bool }
+    throws:
+      - PromiseClosedException: if the Promise handle is invalid
+    jni_name: nativeIsRejected
+    luau_name: isRejected
+    version: stable
+
+  - name: getResult
+    description: >
+      Returns the resolved value. Only valid if isFulfilled() is true; otherwise
+      returns undefined. Call executePendingJobs() first to let the Promise resolve.
+    parameters: []
+    returns:
+      type: JSValue
+      description: the fulfillment value, or undefined if still pending/rejected
+    throws:
+      - PromiseClosedException: if the Promise handle is invalid
+    jni_name: nativeGetResult
+    luau_name: getResult
+    version: stable
+
+  - name: getError
+    description: >
+      Returns the rejection reason. Only valid if isRejected() is true.
+    parameters: []
+    returns:
+      type: JSValue
+      description: the rejection value (usually an Error object)
+    throws:
+      - PromiseClosedException: if the Promise handle is invalid
+    jni_name: nativeGetError
+    luau_name: getError
+    version: stable
+
+  - name: then
+    description: >
+      Chains a JavaScript callback on fulfillment. Returns a new Promise.
+      Requires executePendingJobs() to run the callback.
+    parameters:
+      - name: onFulfilled
+        type: JSValue
+        description: a JS function JSValue called with the resolved value
+    returns:
+      type: Promise
+      description: a new chained Promise
+    throws:
+      - PromiseClosedException: if the Promise handle is invalid
+      - ClassCastException: if onFulfilled is not a function
+    jni_name: nativeThen
+    luau_name: andThen
+    version: stable
+
+  - name: catch
+    description: >
+      Chains a JavaScript callback on rejection. Returns a new Promise.
+    parameters:
+      - name: onRejected
+        type: JSValue
+        description: a JS function JSValue called with the rejection reason
+    returns:
+      type: Promise
+      description: a new chained Promise
+    throws:
+      - PromiseClosedException: if the Promise handle is invalid
+      - ClassCastException: if onRejected is not a function
+    jni_name: nativeCatch
+    luau_name: catch
+    version: stable
+
+  - name: asJSValue
+    description: Returns the underlying JSValue representing this Promise.
+    parameters: []
+    returns:
+      type: JSValue
+    throws: []
+    jni_name: nativeAsJSValue
+    luau_name: toValue
+    version: stable
+
+##############################################################################
+# Exceptions
+##############################################################################
+exceptions:
+  - name: PromiseClosedException
+    parent: IllegalStateException
+    description: Thrown when a method is called on an invalid Promise handle
+
+  - name: JSException
+    parent: RuntimeException
+    description: Wraps a JavaScript error from a rejected Promise
+
+##############################################################################
+# Lifecycle
+##############################################################################
+lifecycle_detail: |
+  Promise.create(ctx) ─► PromiseCapability { promise, resolve, reject }
+                                │
+  executePendingJobs()          │  pending → fulfilled / rejected
+                                ▼
+  getResult() / getError()   SETTLED
+                                │
+  Context.close()               │
+                                ▼
+                            DESTROYED
+
+##############################################################################
+# JNI / Luau mapping
+##############################################################################
+jni_mapping:
+  handle_field: jlong
+
+luau_mapping:
+  # Luau uses coroutine.wrap pattern instead of Promise API
+  userdata: "luandro_js_promise_t*"
+  metatable: "luandro.js.Promise"
+  auto_gc: false   # managed by Context
+
+##############################################################################
+# Examples
+##############################################################################
+examples:
+  kotlin: |
+    Runtime.create().use { runtime ->
+        runtime.newContext().use { ctx ->
+            // Evaluate code that produces a Promise
+            val promiseVal = ctx.eval("Promise.resolve(42)")
+            val promise = Promise.from(ctx, promiseVal)
+
+            // Drain microtask queue to settle the Promise
+            ctx.executePendingJobs()
+
+            if (promise.isFulfilled()) {
+                println(promise.getResult().toInt())  // 42
+            }
+
+            // Create a Promise from Kotlin and resolve it
+            val cap = Promise.create(ctx)
+            cap.resolve.call(ctx.undefined(), listOf(ctx.newInt(100)))
+            ctx.executePendingJobs()
+            println(cap.promise.getResult().toInt())  // 100
+        }
+    }
+
+  luau: |
+    -- In Luau, JS Promise interaction is typically via executePendingJobs()
+    local ctx = runtime:newContext()
+
+    local promiseVal = ctx:eval("Promise.resolve('hello')")
+    ctx:executePendingJobs()
+
+    local promise = js.Promise.from(ctx, promiseVal)
+    if promise:isFulfilled() then
+        print(promise:getResult():toString())  -- hello
+    end
+
+    ctx:close()

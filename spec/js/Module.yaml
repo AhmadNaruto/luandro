@@ -1,0 +1,161 @@
+##############################################################################
+# ASL — API Specification Language
+# File: spec/js/Module.yaml
+# Class: io.github.luandro.js.Module
+# Description: ES Module loader and registry for QuickJS-NG
+##############################################################################
+
+package: io.github.luandro.js
+class: Module
+description: >
+  Represents an ES Module loaded into a Context. Modules are loaded via
+  Context.evalModule() or via import statements in other modules. The Module
+  class provides access to module exports and load status. This is a read-only
+  view into the QuickJS module registry.
+
+native_type: luandro::js::Module
+ownership: context_owned   # lifetime tied to the Context
+lifecycle: handle
+thread_safety: NOT_THREAD_SAFE
+
+##############################################################################
+# Constructors (obtained via Context.evalModule or import)
+##############################################################################
+constructors: []
+
+##############################################################################
+# Factory interface
+##############################################################################
+module_loader_interface:
+  name: ModuleLoader
+  description: >
+    Callback interface for resolving ES module imports. Implement this interface
+    and pass to Context.setModuleLoader().
+  methods:
+    - name: resolveModule
+      description: >
+        Resolves the import path and returns source code. Called by QuickJS
+        when an `import` statement is encountered.
+      parameters:
+        - name: moduleName
+          type: String
+          description: the module specifier from the import statement
+        - name: baseName
+          type: String
+          description: the module that contains the import statement
+      returns:
+        type: String?
+        description: the source code of the module, or null if not found
+
+##############################################################################
+# Methods
+##############################################################################
+methods:
+
+  - name: getName
+    description: Returns the module specifier (name/path) used to load this module.
+    parameters: []
+    returns:
+      type: String
+      description: module name
+    throws:
+      - ModuleClosedException: if this module object is no longer valid
+    jni_name: nativeGetName
+    luau_name: getName
+    version: stable
+
+  - name: getExport
+    description: >
+      Returns the value of a named export from this module. The module must
+      have been fully evaluated (all top-level await resolved) before calling.
+    parameters:
+      - name: exportName
+        type: String
+        description: the export name (e.g. "default", "myFunction", "MyClass")
+    returns:
+      type: JSValue
+      description: the exported value, or undefined if not found
+    throws:
+      - ModuleClosedException: if this module object is no longer valid
+      - JSException: if retrieving the export fails
+    jni_name: nativeGetExport
+    luau_name: getExport
+    version: stable
+
+  - name: isEvaluated
+    description: Returns true if this module has been fully evaluated.
+    parameters: []
+    returns:
+      type: bool
+    throws:
+      - ModuleClosedException: if this module object is no longer valid
+    jni_name: nativeIsEvaluated
+    luau_name: isEvaluated
+    version: stable
+
+##############################################################################
+# Exceptions
+##############################################################################
+exceptions:
+  - name: ModuleClosedException
+    parent: IllegalStateException
+    description: Thrown when a method is called on an invalid Module handle
+
+##############################################################################
+# JNI / Luau mapping
+##############################################################################
+jni_mapping:
+  handle_field: jlong
+
+luau_mapping:
+  userdata: "luandro_js_module_t*"
+  metatable: "luandro.js.Module"
+  auto_gc: false   # lifetime managed by Context
+
+##############################################################################
+# Examples
+##############################################################################
+examples:
+  kotlin: |
+    Runtime.create().use { runtime ->
+        runtime.newContext().use { ctx ->
+            // Set up module loader
+            ctx.setModuleLoader { moduleName, _ ->
+                when (moduleName) {
+                    "math" -> "export const add = (a, b) => a + b;"
+                    else -> null
+                }
+            }
+
+            // Load a module and get exports
+            val modPromise = ctx.evalModule("""
+                import { add } from 'math';
+                export const result = add(3, 4);
+            """, "main.js")
+
+            // Execute pending jobs (resolve imports/promises)
+            ctx.executePendingJobs()
+        }
+    }
+
+  luau: |
+    local runtime = js.newRuntime()
+    local ctx = runtime:newContext()
+
+    ctx:setModuleLoader(function(name, base)
+        if name == "utils" then
+            return "export const greet = name => 'Hello, ' + name"
+        end
+        return nil
+    end)
+
+    ctx:evalModule([[
+        import { greet } from 'utils';
+        globalThis.greeting = greet('World');
+    ]], "app.js")
+
+    ctx:executePendingJobs()
+    print(ctx:getGlobal("greeting"):toString())  -- Hello, World
+
+    ctx:close()
+    runtime:close()

@@ -1,0 +1,161 @@
+version: "1.0"
+status: stable
+author: luandro-nrp
+
+package: io.github.luandro.regex
+class: Regex
+description: |
+  Entry point for the NRP Regex engine backed by jsregexp.
+  Provides JavaScript-compatible regular expression support.
+  Factory methods to compile patterns and perform matching.
+
+lifecycle:
+  owner: NativeRuntime
+  note: Static factory class — no lifecycle
+
+thread_safety: thread_safe
+
+static_functions:
+  - name: compile
+    description: Compile a regex pattern string into a Pattern object
+    args:
+      - name: pattern
+        type: String
+        nullable: false
+        description: JavaScript-compatible regex pattern string (e.g. "\\d+", "[a-z]+")
+      - name: flags
+        type: String
+        nullable: false
+        description: Regex flags (e.g. "gi", "m"). Empty string for no flags.
+    return:
+      type: Handle
+      handle_class: Pattern
+      nullable: false
+    throws:
+      - type: PatternSyntaxException
+        description: If the regex pattern is invalid
+    example: |
+      val pattern = Regex.compile("\\d+", "g")
+      val matcher = pattern.matcher("abc 123 def 456")
+
+  - name: matches
+    description: Returns true if the entire input string matches the pattern
+    args:
+      - name: pattern
+        type: String
+        nullable: false
+      - name: input
+        type: String
+        nullable: false
+    return:
+      type: Boolean
+      nullable: false
+    throws:
+      - type: PatternSyntaxException
+    example: |
+      val ok = Regex.matches("^\\d+$", "12345")  // true
+
+  - name: find
+    description: Finds the first match of the pattern in the input string
+    args:
+      - name: pattern
+        type: String
+        nullable: false
+      - name: input
+        type: String
+        nullable: false
+    return:
+      type: Handle
+      handle_class: MatchResult
+      nullable: true
+    throws:
+      - type: PatternSyntaxException
+    example: |
+      val match = Regex.find("\\d+", "abc 123")
+      println(match?.value)  // "123"
+
+  - name: findAll
+    description: Finds all matches of the pattern in the input string
+    args:
+      - name: pattern
+        type: String
+        nullable: false
+      - name: input
+        type: String
+        nullable: false
+    return:
+      type: List<Handle>
+      handle_class: MatchResult
+      nullable: false
+    throws:
+      - type: PatternSyntaxException
+    example: |
+      val matches = Regex.findAll("\\d+", "abc 123 def 456")
+      // ["123", "456"]
+
+  - name: replace
+    description: Replaces the first match of the pattern with the replacement string
+    args:
+      - name: pattern
+        type: String
+        nullable: false
+      - name: input
+        type: String
+        nullable: false
+      - name: replacement
+        type: String
+        nullable: false
+    return:
+      type: String
+      nullable: false
+    throws:
+      - type: PatternSyntaxException
+    example: |
+      val result = Regex.replace("\\d+", "abc 123 def 456", "NUM")
+      // "abc NUM def 456"
+
+  - name: replaceAll
+    description: Replaces all matches of the pattern with the replacement string
+    args:
+      - name: pattern
+        type: String
+        nullable: false
+      - name: input
+        type: String
+        nullable: false
+      - name: replacement
+        type: String
+        nullable: false
+    return:
+      type: String
+      nullable: false
+    throws:
+      - type: PatternSyntaxException
+    example: |
+      val result = Regex.replaceAll("\\d+", "abc 123 def 456", "NUM")
+      // "abc NUM def NUM"
+
+  - name: split
+    description: Splits the input string around matches of the pattern
+    args:
+      - name: pattern
+        type: String
+        nullable: false
+      - name: input
+        type: String
+        nullable: false
+    return:
+      type: List<String>
+      nullable: false
+    throws:
+      - type: PatternSyntaxException
+    example: |
+      val parts = Regex.split("\\s+", "hello   world  foo")
+      // ["hello", "world", "foo"]
+
+luau_mapping:
+  module_name: regex
+  example: |
+    local ok = regex.matches("^%d+$", "12345")
+    local m = regex.find("%d+", "abc 123")
+    if m then print(m.value) end

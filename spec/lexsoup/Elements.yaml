@@ -1,0 +1,132 @@
+version: "1.0"
+status: stable
+author: luandro-nrp
+
+package: io.github.luandro.lexsoup
+class: Elements
+description: |
+  An ordered collection of Element objects, result of a CSS selector query.
+  Provides bulk operations over matched elements.
+  Implements Iterable<Element> for idiomatic Kotlin iteration.
+  All operations execute entirely in native C++ code.
+
+lifecycle:
+  created_by: Document.select(), Element.select(), Document.getElementsByTag()
+  destroyed_by: Elements.close() or parent Document.close()
+  owner: NativeRuntime
+  handle_type: Long
+
+thread_safety: not_thread_safe
+closeable: true
+
+properties:
+  - name: size
+    description: Number of elements in this collection
+    type: Int
+    access: read_only
+    nullable: false
+
+  - name: isEmpty
+    description: True if this collection contains no elements
+    type: Boolean
+    access: read_only
+    nullable: false
+
+methods:
+  - name: get
+    description: Returns the element at the given index
+    args:
+      - name: index
+        type: Int
+        nullable: false
+    return:
+      type: Handle
+      handle_class: Element
+      nullable: false
+    throws:
+      - type: IndexOutOfBoundsException
+    example: |
+      val first = elements[0]  // via operator overload
+
+  - name: first
+    description: Returns the first element, or null if empty
+    args: []
+    return:
+      type: Handle
+      handle_class: Element
+      nullable: true
+
+  - name: last
+    description: Returns the last element, or null if empty
+    args: []
+    return:
+      type: Handle
+      handle_class: Element
+      nullable: true
+
+  - name: text
+    description: Returns the combined text content of all elements
+    args: []
+    return:
+      type: String
+      nullable: false
+    example: |
+      val allText = elements.text()
+
+  - name: attr
+    description: Returns the value of the named attribute from the first element
+    args:
+      - name: attributeName
+        type: String
+        nullable: false
+    return:
+      type: String
+      nullable: false
+
+  - name: eachAttr
+    description: Returns a list of attribute values from all elements
+    args:
+      - name: attributeName
+        type: String
+        nullable: false
+    return:
+      type: List<String>
+      nullable: false
+    example: |
+      val hrefs = elements.eachAttr("href")
+
+  - name: eachText
+    description: Returns a list of text content from all elements
+    args: []
+    return:
+      type: List<String>
+      nullable: false
+
+  - name: select
+    description: Filters this collection further with an additional CSS selector
+    args:
+      - name: cssQuery
+        type: String
+        nullable: false
+    return:
+      type: Handle
+      handle_class: Elements
+      nullable: false
+
+  - name: close
+    description: Destroys the native collection and releases memory
+    args: []
+    return:
+      type: Void
+
+luau_mapping:
+  object_name: elements
+  method_syntax: colon
+  example: |
+    local links = doc:select("a[href]")
+    print(links:size())
+    for i = 1, links:size() do
+      local el = links:get(i - 1)
+      print(el:attr("href"))
+    end
+    links:close()

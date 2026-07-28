@@ -1,0 +1,296 @@
+##############################################################################
+# ASL — API Specification Language
+# File: spec/js/JSValue.yaml
+# Class: io.github.luandro.js.JSValue
+# Description: Wrapper for a QuickJS JavaScript value
+##############################################################################
+
+package: io.github.luandro.js
+class: JSValue
+description: >
+  Represents a JavaScript value (undefined, null, bool, int, double, string,
+  object, array, function, or exception) obtained from evaluating JS code or
+  constructing values via Context factory methods. JSValues are reference-
+  counted by QuickJS internally. They must be explicitly freed or they will
+  be freed when their Context is destroyed.
+
+native_type: luandro::js::JSValue
+ownership: reference_counted  # QuickJS ref-count under the hood
+lifecycle: handle
+thread_safety: NOT_THREAD_SAFE
+parent: Context
+
+##############################################################################
+# Constructors (obtained via Context factory methods or eval)
+##############################################################################
+constructors: []
+
+##############################################################################
+# Type query methods
+##############################################################################
+methods:
+
+  - name: isUndefined
+    description: Returns true if this value is JavaScript undefined.
+    parameters: []
+    returns: { type: bool }
+    jni_name: nativeIsUndefined
+    luau_name: isUndefined
+    version: stable
+
+  - name: isNull
+    description: Returns true if this value is JavaScript null.
+    parameters: []
+    returns: { type: bool }
+    jni_name: nativeIsNull
+    luau_name: isNull
+    version: stable
+
+  - name: isBool
+    description: Returns true if this value is a JavaScript boolean.
+    parameters: []
+    returns: { type: bool }
+    jni_name: nativeIsBool
+    luau_name: isBool
+    version: stable
+
+  - name: isInt
+    description: Returns true if this value is a JavaScript integer (no fractional part, fits int32).
+    parameters: []
+    returns: { type: bool }
+    jni_name: nativeIsInt
+    luau_name: isInt
+    version: stable
+
+  - name: isDouble
+    description: Returns true if this value is a JavaScript number (float64).
+    parameters: []
+    returns: { type: bool }
+    jni_name: nativeIsDouble
+    luau_name: isDouble
+    version: stable
+
+  - name: isString
+    description: Returns true if this value is a JavaScript string.
+    parameters: []
+    returns: { type: bool }
+    jni_name: nativeIsString
+    luau_name: isString
+    version: stable
+
+  - name: isObject
+    description: Returns true if this value is a JavaScript object (including arrays and functions).
+    parameters: []
+    returns: { type: bool }
+    jni_name: nativeIsObject
+    luau_name: isObject
+    version: stable
+
+  - name: isArray
+    description: Returns true if this value is a JavaScript Array.
+    parameters: []
+    returns: { type: bool }
+    jni_name: nativeIsArray
+    luau_name: isArray
+    version: stable
+
+  - name: isFunction
+    description: Returns true if this value is a JavaScript function.
+    parameters: []
+    returns: { type: bool }
+    jni_name: nativeIsFunction
+    luau_name: isFunction
+    version: stable
+
+  - name: isException
+    description: Returns true if this value represents a JavaScript exception/error.
+    parameters: []
+    returns: { type: bool }
+    jni_name: nativeIsException
+    luau_name: isException
+    version: stable
+
+##############################################################################
+# Value extraction methods
+##############################################################################
+
+  - name: toBool
+    description: Extracts this value as a Kotlin Boolean.
+    parameters: []
+    returns:
+      type: bool
+    throws:
+      - ClassCastException: if not a boolean
+    jni_name: nativeToBool
+    luau_name: toBool
+    version: stable
+
+  - name: toInt
+    description: Extracts this value as a Kotlin Int (int32).
+    parameters: []
+    returns:
+      type: int
+    throws:
+      - ClassCastException: if not an integer
+    jni_name: nativeToInt
+    luau_name: toInt
+    version: stable
+
+  - name: toDouble
+    description: Extracts this value as a Kotlin Double (float64).
+    parameters: []
+    returns:
+      type: double
+    throws:
+      - ClassCastException: if not a number
+    jni_name: nativeToDouble
+    luau_name: toDouble
+    version: stable
+
+  - name: toString
+    description: Extracts this value as a Kotlin String (JS coercion applied if needed).
+    parameters: []
+    returns:
+      type: String
+    throws: []
+    jni_name: nativeToString
+    luau_name: toString
+    version: stable
+
+  - name: getProperty
+    description: Gets a named property from a JS object.
+    parameters:
+      - name: name
+        type: String
+        description: property name
+    returns:
+      type: JSValue
+      description: the property value, or undefined
+    throws:
+      - ClassCastException: if this value is not an object
+      - JSException: if the property getter throws
+    jni_name: nativeGetProperty
+    luau_name: getProperty
+    version: stable
+
+  - name: setProperty
+    description: Sets a named property on a JS object.
+    parameters:
+      - name: name
+        type: String
+        description: property name
+      - name: value
+        type: JSValue
+        description: value to set
+    returns:
+      type: void
+    throws:
+      - ClassCastException: if this value is not an object
+      - JSException: if the property setter throws
+    jni_name: nativeSetProperty
+    luau_name: setProperty
+    version: stable
+
+  - name: getPropertyAt
+    description: Gets an element from a JS array by index.
+    parameters:
+      - name: index
+        type: int
+        description: zero-based array index
+    returns:
+      type: JSValue
+    throws:
+      - ClassCastException: if this value is not an array or object
+    jni_name: nativeGetPropertyAt
+    luau_name: getAt
+    version: stable
+
+  - name: length
+    description: Returns the "length" property of an array or string.
+    parameters: []
+    returns:
+      type: int
+    throws:
+      - ClassCastException: if not an array or string
+    jni_name: nativeLength
+    luau_name: length
+    version: stable
+
+  - name: call
+    description: Calls this JS value as a function with the given arguments.
+    parameters:
+      - name: thisObj
+        type: JSValue
+        description: value of `this` in the call (use Context.undefined() for none)
+      - name: args
+        type: List<JSValue>
+        description: function arguments
+    returns:
+      type: JSValue
+      description: return value of the function
+    throws:
+      - ClassCastException: if this value is not a function
+      - JSException: if the function throws
+    jni_name: nativeCall
+    luau_name: call
+    version: stable
+
+  - name: free
+    description: >
+      Explicitly decrements the QuickJS reference count for this value, releasing
+      the native resource early. After free(), this object must not be used.
+      Normally called automatically when Context is closed.
+    parameters: []
+    returns:
+      type: void
+    throws: []
+    jni_name: nativeFree
+    luau_name: null   # auto-managed
+    version: stable
+
+##############################################################################
+# JNI / Luau mapping
+##############################################################################
+jni_mapping:
+  handle_field: jlong
+  string_return: jstring
+  bool_return: jboolean
+  int_return: jint
+  double_return: jdouble
+
+luau_mapping:
+  userdata: "luandro_js_value_t*"
+  metatable: "luandro.js.JSValue"
+  auto_gc: true
+
+##############################################################################
+# Examples
+##############################################################################
+examples:
+  kotlin: |
+    Runtime.create().use { runtime ->
+        runtime.newContext().use { ctx ->
+            val obj = ctx.eval("""({ name: "Luandro", version: 1 })""")
+
+            if (obj.isObject()) {
+                val name = obj.getProperty("name").toString()  // "Luandro"
+                val ver  = obj.getProperty("version").toInt()  // 1
+                println("$name v$ver")
+            }
+
+            val arr = ctx.eval("[10, 20, 30]")
+            if (arr.isArray()) {
+                val len = arr.length()
+                for (i in 0 until len) {
+                    println(arr.getPropertyAt(i).toInt())
+                }
+            }
+        }
+    }
+
+  luau: |
+    local ctx = runtime:newContext()
+    local obj = ctx:eval([[{ name: "hello" }]])
+    print(obj:getProperty("name"):toString())  -- "hello"
+    obj:free()
+    ctx:close()
