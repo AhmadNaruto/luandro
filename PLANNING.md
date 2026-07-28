@@ -121,10 +121,10 @@ Desenvolver uma **Native Runtime Platform (NRP)** modular e de alta performance 
 | Fase | Nome | Status | Descrição |
 |------|------|--------|-----------|
 | **0** | Repository Foundation | ✅ DONE | Criar estrutura inicial do repo, Gradle multi-module, CMake |
-| **0.5** | Project Standards & Guidelines | ⬜ TODO | Definir padrões de desenvolvimento (C++20, RAII, JNI thin, etc.) |
-| **0.6** | Build & Toolchain Specification | ⬜ TODO | Ambiente de build, NDK, AGP, Gradle, CI/CD |
-| **0.7** | Code Generation Strategy | ⬜ TODO | Projetar sistema de geração de código (antes de qualquer implementação) |
-| **0.8** | API Specification Language (ASL) | ⬜ TODO | Projetar a linguagem formal de especificação de APIs (YAML) |
+| **0.5** | Project Standards & Guidelines | ✅ DONE | Definir padrões de desenvolvimento (C++20, RAII, JNI thin, etc.) |
+| **0.6** | Build & Toolchain Specification | ✅ DONE | Ambiente de build, NDK, AGP, Gradle, CI/CD |
+| **0.7** | Code Generation Strategy | ✅ DONE | Projetar sistema de geração de código (antes de qualquer implementação) |
+| **0.8** | API Specification Language (ASL) | ✅ DONE | Projetar a linguagem formal de especificação de APIs (YAML) |
 
 ### 🏛️ Fases de Design
 
@@ -509,11 +509,11 @@ spec/
 ## 📊 Progresso Geral
 
 ```
-Fases de Preparação:    [ 1/5 ]  (20%)
-Fases de Design:        [ 0/2 ]  ( 0%)
-Fases de Implementação: [ 0/9 ]  ( 0%)
+Fases de Preparação:    [ 5/5 ]  (100%)
+Fases de Design:        [ 0/2 ]  (  0%)
+Fases de Implementação: [ 0/9 ]  (  0%)
 ─────────────────────────────────────
-TOTAL:                  [ 1/16]  ( 6%)
+TOTAL:                  [ 5/16]  ( 31%)
 ```
 
 ---
