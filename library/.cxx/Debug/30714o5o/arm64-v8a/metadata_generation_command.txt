@@ -1,0 +1,22 @@
+                        -H/data/data/com.termux/files/home/luandro/library/src/main/cpp
+-DCMAKE_SYSTEM_NAME=Android
+-DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+-DCMAKE_SYSTEM_VERSION=21
+-DANDROID_PLATFORM=android-21
+-DANDROID_ABI=arm64-v8a
+-DCMAKE_ANDROID_ARCH_ABI=arm64-v8a
+-DANDROID_NDK=/data/data/com.termux/files/home/android-sdk/ndk/28.2.13676358
+-DCMAKE_ANDROID_NDK=/data/data/com.termux/files/home/android-sdk/ndk/28.2.13676358
+-DCMAKE_TOOLCHAIN_FILE=/data/data/com.termux/files/home/android-sdk/ndk/28.2.13676358/build/cmake/android.toolchain.cmake
+-DCMAKE_MAKE_PROGRAM=/data/data/com.termux/files/usr/bin/ninja
+-DCMAKE_CXX_FLAGS=-std=c++20 -DDEBUG -DNRP_ENABLE_LOGGING -DNRP_ENABLE_ASSERTIONS
+-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=/data/data/com.termux/files/home/luandro/library/build/intermediates/cxx/Debug/30714o5o/obj/arm64-v8a
+-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=/data/data/com.termux/files/home/luandro/library/build/intermediates/cxx/Debug/30714o5o/obj/arm64-v8a
+-B/data/data/com.termux/files/home/luandro/library/.cxx/Debug/30714o5o/arm64-v8a
+-GNinja
+-DANDROID_STL=c++_shared
+-DANDROID_ARM_NEON=TRUE
+-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=OFF
+-DCMAKE_BUILD_TYPE=Debug
+                        Build command args: []
+                        Version: 2

@@ -1,0 +1,30 @@
+# Luandro NRP — Version Catalog
+# All dependency versions are defined here.
+# Phase 0.6: Build & Toolchain Specification
+
+[versions]
+# Build System
+agp                 = "8.7.3"
+kotlin              = "2.0.21"
+gradle              = "8.9"
+
+# Android
+minSdk              = "21"
+targetSdk           = "36"
+compileSdk          = "36"
+buildTools          = "36.0.0"
+
+# NDK (single version for entire project)
+ndk                 = "28.2.13676358"
+
+# Testing
+junit               = "4.13.2"
+junitExt            = "1.2.1"
+
+[libraries]
+junit               = { group = "junit",                       name = "junit",            version.ref = "junit"    }
+junit-ext           = { group = "androidx.test.ext",           name = "junit",            version.ref = "junitExt" }
+
+[plugins]
+android-library     = { id = "com.android.library",            version.ref = "agp"    }
+kotlin-android      = { id = "org.jetbrains.kotlin.android",   version.ref = "kotlin" }

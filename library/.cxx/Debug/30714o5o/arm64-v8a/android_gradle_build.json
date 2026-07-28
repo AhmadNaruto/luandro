@@ -1,0 +1,38 @@
+{
+  "buildFiles": [
+    "/data/data/com.termux/files/home/luandro/library/src/main/cpp/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/data/data/com.termux/files/usr/bin/ninja",
+      "-C",
+      "/data/data/com.termux/files/home/luandro/library/.cxx/Debug/30714o5o/arm64-v8a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/data/data/com.termux/files/usr/bin/ninja",
+    "-C",
+    "/data/data/com.termux/files/home/luandro/library/.cxx/Debug/30714o5o/arm64-v8a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "luandro_nrp::@6890427a1f51a3e7e1df": {
+      "toolchain": "toolchain",
+      "abi": "arm64-v8a",
+      "artifactName": "luandro_nrp",
+      "output": "/data/data/com.termux/files/home/luandro/library/build/intermediates/cxx/Debug/30714o5o/obj/arm64-v8a/libluandro_nrp.so",
+      "runtimeFiles": []
+    }
+  },
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "/data/data/com.termux/files/usr/bin/clang.lld",
+      "cppCompilerExecutable": "/data/data/com.termux/files/usr/bin/clang++.lld"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

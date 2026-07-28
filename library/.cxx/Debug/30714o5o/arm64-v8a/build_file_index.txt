@@ -1,0 +1,1 @@
+/data/data/com.termux/files/home/luandro/library/src/main/cpp/CMakeLists.txt
