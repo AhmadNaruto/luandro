@@ -101,7 +101,8 @@ def generate_native_header(spec):
     out.append(f"namespace nrp::{module} {{\n")
 
     if desc:
-        out.append(f"/**\n * {desc.replace('\n', '\n * ')}\n */")
+        formatted_desc = desc.replace('\n', '\n * ')
+        out.append(f"/**\n * {formatted_desc}\n */")
 
     out.append(f"class {cls_name}Gen {{")
     out.append("public:")
@@ -202,7 +203,8 @@ def generate_kotlin_wrapper(spec):
     out.append("import java.util.concurrent.atomic.AtomicBoolean\n")
 
     if desc:
-        out.append(f"/**\n * {desc.replace('\n', '\n * ')}\n */")
+        formatted_desc = desc.replace('\n', '\n * ')
+        out.append(f"/**\n * {formatted_desc}\n */")
 
     interface_str = " : Closeable" if closeable else ""
     out.append(f"open class {cls_name}Gen internal constructor(internal val handle: Long){interface_str} {{")
