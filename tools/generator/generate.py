@@ -158,6 +158,34 @@ def generate_jni_impl(spec):
         out.append("    });")
         out.append("}\n")
 
+    # Static Functions
+    static_functions = spec.get("static_functions", []) or []
+    for sf in static_functions:
+        sf_name = sf.get("name")
+        jni_fn = sf.get("jni_name", f"native{sf_name[0].upper()}{sf_name[1:]}")
+        ret_info = sf.get("return") or sf.get("returns") or {}
+        ret_type = ret_info.get("type", "Void") if isinstance(ret_info, dict) else "Void"
+        jni_ret = map_type_to_jni(ret_type)
+
+        args = sf.get("args", []) or sf.get("parameters", []) or []
+        jni_params = ["JNIEnv* env", "jclass cls"]
+        for a in args:
+            a_name = a.get("name")
+            a_type = map_type_to_jni(a.get("type", "String"))
+            jni_params.append(f"{a_type} {a_name}")
+
+        out.append(f"JNIEXPORT {jni_ret} JNICALL")
+        out.append(f"Java_{pkg_jni}_{cls_name}_{jni_fn}({', '.join(jni_params)}) {{")
+        if jni_ret == "void":
+            out.append("    nrp::jni::withExceptionTranslation(env, [&]() {")
+            out.append("        // Invocation stub")
+            out.append("    });")
+        else:
+            out.append(f"    return nrp::jni::withExceptionTranslation(env, [&]() -> {jni_ret} {{")
+            out.append("        // Invocation stub")
+            out.append(f"        return {jni_ret}{{}};")
+            out.append("    });")
+        out.append("}\n")
     # Methods
     for m in methods:
         m_name = m.get("name")
