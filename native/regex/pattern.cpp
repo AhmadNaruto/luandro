@@ -39,7 +39,7 @@ Handle Pattern::find(Handle self_handle, const std::string& input) {
     Handle matcher_h = matcher(self_handle, input);
     auto* m = Runtime::get().objects().get<Matcher>(matcher_h);
     if (m->find()) {
-        Handle res_h = m->toMatchResult(matcher_h);
+        Handle res_h = m->toMatchResult(kInvalidHandle);
         Runtime::get().objects().destroy(matcher_h);
         return res_h;
     }
@@ -53,7 +53,7 @@ std::vector<Handle> Pattern::findAll(Handle self_handle, const std::string& inpu
     Handle matcher_h = matcher(self_handle, input);
     auto* m = Runtime::get().objects().get<Matcher>(matcher_h);
     while (m->find()) {
-        Handle res_h = m->toMatchResult(matcher_h);
+        Handle res_h = m->toMatchResult(kInvalidHandle);
         results.push_back(res_h);
     }
     Runtime::get().objects().destroy(matcher_h);

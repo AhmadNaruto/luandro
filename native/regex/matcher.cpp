@@ -367,13 +367,19 @@ std::string Matcher::replaceAll(const std::string& replacement) {
     reset();
     std::string result;
     int last_copied = 0;
+    int str_len = static_cast<int>(js_input.bstr.length());
     while (find()) {
         int s = start();
-        result.append(js_input.bstr.data() + last_copied, s - last_copied);
-        result.append(format_replacement(replacement, this));
-        last_copied = end();
+        int e = end();
+        if (s >= last_copied && s <= str_len) {
+            result.append(js_input.bstr, last_copied, s - last_copied);
+            result.append(format_replacement(replacement, this));
+            last_copied = std::max(last_copied, e);
+        }
     }
-    result.append(js_input.bstr.data() + last_copied, js_input.bstr.length() - last_copied);
+    if (last_copied >= 0 && last_copied <= str_len) {
+        result.append(js_input.bstr, last_copied, str_len - last_copied);
+    }
     return result;
 }
 
@@ -381,12 +387,16 @@ std::string Matcher::replaceFirst(const std::string& replacement) {
     checkClosed();
     reset();
     std::string result;
+    int str_len = static_cast<int>(js_input.bstr.length());
     if (find()) {
         int s = start();
-        result.append(js_input.bstr.data(), s);
-        result.append(format_replacement(replacement, this));
-        result.append(js_input.bstr.data() + end(), js_input.bstr.length() - end());
-        return result;
+        int e = end();
+        if (s >= 0 && s <= str_len && e >= s && e <= str_len) {
+            result.append(js_input.bstr, 0, s);
+            result.append(format_replacement(replacement, this));
+            result.append(js_input.bstr, e, str_len - e);
+            return result;
+        }
     }
     return js_input.bstr;
 }
