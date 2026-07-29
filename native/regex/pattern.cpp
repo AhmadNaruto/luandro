@@ -25,9 +25,9 @@ Handle Pattern::matcher(Handle self_handle, const std::string& input) {
     return h;
 }
 
-bool Pattern::matches(const std::string& input) {
+bool Pattern::matches(Handle self_handle, const std::string& input) {
     if (is_closed) throw NrpException("Pattern is closed");
-    Handle matcher_h = matcher(reinterpret_cast<Handle>(this), input);
+    Handle matcher_h = matcher(self_handle, input);
     auto* m = Runtime::get().objects().get<Matcher>(matcher_h);
     bool result = m->matches();
     Runtime::get().objects().destroy(matcher_h);
@@ -60,28 +60,28 @@ std::vector<Handle> Pattern::findAll(Handle self_handle, const std::string& inpu
     return results;
 }
 
-std::string Pattern::replace(const std::string& input, const std::string& replacement) {
+std::string Pattern::replace(Handle self_handle, const std::string& input, const std::string& replacement) {
     if (is_closed) throw NrpException("Pattern is closed");
-    Handle matcher_h = matcher(reinterpret_cast<Handle>(this), input);
+    Handle matcher_h = matcher(self_handle, input);
     auto* m = Runtime::get().objects().get<Matcher>(matcher_h);
     std::string result = m->replaceFirst(replacement);
     Runtime::get().objects().destroy(matcher_h);
     return result;
 }
 
-std::string Pattern::replaceAll(const std::string& input, const std::string& replacement) {
+std::string Pattern::replaceAll(Handle self_handle, const std::string& input, const std::string& replacement) {
     if (is_closed) throw NrpException("Pattern is closed");
-    Handle matcher_h = matcher(reinterpret_cast<Handle>(this), input);
+    Handle matcher_h = matcher(self_handle, input);
     auto* m = Runtime::get().objects().get<Matcher>(matcher_h);
     std::string result = m->replaceAll(replacement);
     Runtime::get().objects().destroy(matcher_h);
     return result;
 }
 
-std::vector<std::string> Pattern::split(const std::string& input) {
+std::vector<std::string> Pattern::split(Handle self_handle, const std::string& input) {
     if (is_closed) throw NrpException("Pattern is closed");
     std::vector<std::string> result;
-    Handle matcher_h = matcher(reinterpret_cast<Handle>(this), input);
+    Handle matcher_h = matcher(self_handle, input);
     auto* m = Runtime::get().objects().get<Matcher>(matcher_h);
     int last_copied = 0;
     while (m->find()) {

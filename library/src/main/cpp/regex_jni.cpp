@@ -137,7 +137,7 @@ Java_io_github_luandro_regex_Pattern_nativeMatches(JNIEnv* env, jobject thiz, jl
         auto* pat = nrp::Runtime::get().objects().get<nrp::regex::Pattern>(handle);
         if (!pat) throw nrp::NrpException("Pattern is closed or invalid");
         nrp::jni::JStringUTF inp_guard(env, input);
-        return static_cast<jboolean>(pat->matches(inp_guard.str()));
+        return static_cast<jboolean>(pat->matches(static_cast<nrp::Handle>(handle), inp_guard.str()));
     });
 }
 
@@ -175,7 +175,7 @@ Java_io_github_luandro_regex_Pattern_nativeReplace(JNIEnv* env, jobject thiz, jl
         if (!pat) throw nrp::NrpException("Pattern is closed or invalid");
         nrp::jni::JStringUTF inp_guard(env, input);
         nrp::jni::JStringUTF rep_guard(env, replacement);
-        std::string result = pat->replace(inp_guard.str(), rep_guard.str());
+        std::string result = pat->replace(static_cast<nrp::Handle>(handle), inp_guard.str(), rep_guard.str());
         return env->NewStringUTF(result.c_str());
     });
 }
@@ -187,7 +187,7 @@ Java_io_github_luandro_regex_Pattern_nativeReplaceAll(JNIEnv* env, jobject thiz,
         if (!pat) throw nrp::NrpException("Pattern is closed or invalid");
         nrp::jni::JStringUTF inp_guard(env, input);
         nrp::jni::JStringUTF rep_guard(env, replacement);
-        std::string result = pat->replaceAll(inp_guard.str(), rep_guard.str());
+        std::string result = pat->replaceAll(static_cast<nrp::Handle>(handle), inp_guard.str(), rep_guard.str());
         return env->NewStringUTF(result.c_str());
     });
 }
@@ -198,7 +198,7 @@ Java_io_github_luandro_regex_Pattern_nativeSplit(JNIEnv* env, jobject thiz, jlon
         auto* pat = nrp::Runtime::get().objects().get<nrp::regex::Pattern>(handle);
         if (!pat) throw nrp::NrpException("Pattern is closed or invalid");
         nrp::jni::JStringUTF inp_guard(env, input);
-        std::vector<std::string> parts = pat->split(inp_guard.str());
+        std::vector<std::string> parts = pat->split(static_cast<nrp::Handle>(handle), inp_guard.str());
         return nrp::TypeConverter::to_jobjectarray_string(env, parts);
     });
 }

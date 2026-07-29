@@ -25,12 +25,12 @@ public:
     [[nodiscard]] int bytecode_len() const noexcept { return bc_len; }
 
     Handle matcher(Handle self_handle, const std::string& input);
-    bool matches(const std::string& input);
+    bool matches(Handle self_handle, const std::string& input);
     Handle find(Handle self_handle, const std::string& input);
     std::vector<Handle> findAll(Handle self_handle, const std::string& input);
-    std::string replace(const std::string& input, const std::string& replacement);
-    std::string replaceAll(const std::string& input, const std::string& replacement);
-    std::vector<std::string> split(const std::string& input);
+    std::string replace(Handle self_handle, const std::string& input, const std::string& replacement);
+    std::string replaceAll(Handle self_handle, const std::string& input, const std::string& replacement);
+    std::vector<std::string> split(Handle self_handle, const std::string& input);
 
     void close();
 

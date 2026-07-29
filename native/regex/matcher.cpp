@@ -166,7 +166,6 @@ Matcher::Matcher(Handle pat_h, const std::string& inp)
     if (!pat) throw NrpException("Pattern is invalid or closed");
     
     capture_count = lre_get_capture_count(pat->bytecode());
-    pat->track_child(reinterpret_cast<Handle>(this)); // Handled inside register_object or manually tracked
 }
 
 Matcher::~Matcher() {
