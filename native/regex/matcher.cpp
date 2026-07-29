@@ -84,11 +84,15 @@ JSString::JSString(const std::string& input) {
         const uint8_t* start = pos;
         
         while (*pos) {
+            uint32_t byte_off = static_cast<uint32_t>(pos - start);
             if (q_idx >= indices.size()) {
-                indices.resize(q_idx * 2);
+                indices.resize((q_idx + 1) * 2, 0);
             }
-            indices[q_idx] = pos - start;
-            rev_indices[pos - start] = q_idx;
+            if (byte_off >= rev_indices.size()) {
+                rev_indices.resize((byte_off + 1) * 2, 0);
+            }
+            indices[q_idx] = byte_off;
+            rev_indices[byte_off] = q_idx;
 
             int c = nrp_unicode_from_utf8(pos, 6, &pos);
             if (c == -1) {
@@ -98,22 +102,22 @@ JSString::JSString(const std::string& input) {
             if (c > 0xffff) {
                 c -= 0x10000;
                 if (q_idx + 2 >= str16.size()) {
-                    str16.resize(str16.size() * 2);
+                    str16.resize((str16.size() + 2) * 2, 0);
                 }
                 str16[q_idx++] = 0xd800 | (c >> 10);
                 str16[q_idx++] = 0xdc00 | (c & 0x3ff);
             } else {
                 if (q_idx + 1 >= str16.size()) {
-                    str16.resize(str16.size() * 2);
+                    str16.resize((str16.size() + 2) * 2, 0);
                 }
                 str16[q_idx++] = c & 0xffff;
             }
         }
-        str16.resize(q_idx + 1);
+        str16.resize(q_idx + 1, 0);
         str16[q_idx] = 0;
-        indices.resize(q_idx + 1);
+        indices.resize(q_idx + 1, 0);
         indices[q_idx] = n;
-        rev_indices.resize(n + 1);
+        rev_indices.resize(n + 1, 0);
         rev_indices[n] = q_idx;
         len = q_idx;
     }
