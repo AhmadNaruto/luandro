@@ -191,8 +191,15 @@ std::string Document::outerHtml() {
 
 std::string Document::text() {
     if (!document_ptr) throw NrpException("Document is closed");
-    lxb_dom_node_t* root = lxb_dom_interface_node(document_ptr);
-    return get_node_text(root);
+    lxb_html_body_element_t* body_el = lxb_html_document_body_element(document_ptr);
+    if (body_el) {
+        return get_node_text(lxb_dom_interface_node(body_el));
+    }
+    lxb_dom_element_t* doc_el = lxb_html_document_element(document_ptr);
+    if (doc_el) {
+        return get_node_text(lxb_dom_interface_node(doc_el));
+    }
+    return "";
 }
 
 } // namespace nrp::lexsoup

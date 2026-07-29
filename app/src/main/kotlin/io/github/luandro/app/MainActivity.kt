@@ -95,7 +95,7 @@ fun NrpDemoApp() {
 fun LexSoupTab() {
     var htmlInput by remember {
         mutableStateOf(
-            "<!DOCTYPE html>\n<html><body>\n  <h1 id='title'>Hello World</h1>\n  <p class='intro'>LexSoup DOM Parser in Action!</p>\n</body></html>"
+            "<!DOCTYPE html>\n<html><head><title>LexSoup Demo Page</title></head><body>\n  <h1 id='title'>Hello World</h1>\n  <p class='intro'>LexSoup DOM Parser in Action!</p>\n  <p class='intro'>Fast & lightweight Lexbor native HTML engine.</p>\n</body></html>"
         )
     }
     var resultText by remember { mutableStateOf("") }
