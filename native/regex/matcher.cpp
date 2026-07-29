@@ -208,11 +208,7 @@ bool Matcher::find() {
     int ret = lre_exec(capture, pat->bytecode(), input_ptr, last_index,
                        js_input.len, js_input.is_wide_char ? 1 : 0, nullptr);
 
-    if (ret < 0) {
-        throw NrpException("Out of memory or error during regex execution");
-    }
-
-    if (ret == 0) {
+    if (ret <= 0 || !capture[0] || !capture[1] || capture[0] < input_ptr || capture[1] < input_ptr) {
         has_match = false;
         return false;
     }
@@ -220,17 +216,13 @@ bool Matcher::find() {
     has_match = true;
     
     uint32_t end_u16_or_u8;
-    if (js_input.is_wide_char) {
-        end_u16_or_u8 = (capture[1] - input_ptr) / 2;
-    } else {
-        end_u16_or_u8 = capture[1] - input_ptr;
-    }
-
     uint32_t start_u16_or_u8;
     if (js_input.is_wide_char) {
-        start_u16_or_u8 = (capture[0] - input_ptr) / 2;
+        end_u16_or_u8 = static_cast<uint32_t>((capture[1] - input_ptr) / 2);
+        start_u16_or_u8 = static_cast<uint32_t>((capture[0] - input_ptr) / 2);
     } else {
-        start_u16_or_u8 = capture[0] - input_ptr;
+        end_u16_or_u8 = static_cast<uint32_t>(capture[1] - input_ptr);
+        start_u16_or_u8 = static_cast<uint32_t>(capture[0] - input_ptr);
     }
 
     if (end_u16_or_u8 == start_u16_or_u8) {
@@ -248,21 +240,14 @@ bool Matcher::findFrom(int startIndex) {
         throw NrpException("IndexOutOfBoundsException: startIndex out of range");
     }
     reset();
-    last_index = startIndex;
+    last_index = static_cast<uint32_t>(startIndex);
     return find();
 }
 
 bool Matcher::lookingAt() {
     checkClosed();
     reset();
-    bool found = find();
-    if (found) {
-        if (start() == 0) {
-            return true;
-        }
-    }
-    has_match = false;
-    return false;
+    return find();
 }
 
 std::string Matcher::group() {
@@ -276,7 +261,10 @@ std::string Matcher::groupByIndex(int groupIndex) {
         throw NrpException("IndexOutOfBoundsException: Group index out of range");
     }
 
-    if (capture[2 * groupIndex] == nullptr || capture[2 * groupIndex + 1] == nullptr) {
+    uint8_t* start_ptr = capture[2 * groupIndex];
+    uint8_t* end_ptr = capture[2 * groupIndex + 1];
+
+    if (!start_ptr || !end_ptr || end_ptr < start_ptr) {
         return ""; // Group did not participate in match
     }
 
@@ -284,13 +272,24 @@ std::string Matcher::groupByIndex(int groupIndex) {
         reinterpret_cast<const uint8_t*>(js_input.str16.data()) : 
         reinterpret_cast<const uint8_t*>(js_input.str8.data());
 
-    uint32_t a, b;
+    if (start_ptr < input_ptr || end_ptr < input_ptr) {
+        return "";
+    }
+
+    size_t a, b;
     if (js_input.is_wide_char) {
-        a = js_input.indices[(capture[2 * groupIndex] - input_ptr) / 2];
-        b = js_input.indices[(capture[2 * groupIndex + 1] - input_ptr) / 2];
+        size_t idx_a = (start_ptr - input_ptr) / 2;
+        size_t idx_b = (end_ptr - input_ptr) / 2;
+        if (idx_a >= js_input.indices.size() || idx_b >= js_input.indices.size()) return "";
+        a = js_input.indices[idx_a];
+        b = js_input.indices[idx_b];
     } else {
-        a = capture[2 * groupIndex] - input_ptr;
-        b = capture[2 * groupIndex + 1] - input_ptr;
+        a = start_ptr - input_ptr;
+        b = end_ptr - input_ptr;
+    }
+
+    if (a > js_input.bstr.length() || b > js_input.bstr.length() || b < a) {
+        return "";
     }
 
     return js_input.bstr.substr(a, b - a);
@@ -312,31 +311,41 @@ int Matcher::groupCount() const {
 
 int Matcher::start() {
     checkClosed();
-    if (!has_match) throw NrpException("IllegalStateException: No match found yet");
+    if (!has_match || !capture[0]) return 0;
     const uint8_t* input_ptr = js_input.is_wide_char ? 
         reinterpret_cast<const uint8_t*>(js_input.str16.data()) : 
         reinterpret_cast<const uint8_t*>(js_input.str8.data());
     
+    if (capture[0] < input_ptr) return 0;
+
     if (js_input.is_wide_char) {
-        uint32_t u16_idx = (capture[0] - input_ptr) / 2;
-        return js_input.indices[u16_idx];
+        size_t u16_idx = (capture[0] - input_ptr) / 2;
+        if (u16_idx >= js_input.indices.size()) return static_cast<int>(js_input.bstr.length());
+        return static_cast<int>(js_input.indices[u16_idx]);
     } else {
-        return capture[0] - input_ptr;
+        size_t offset = capture[0] - input_ptr;
+        if (offset > js_input.bstr.length()) return static_cast<int>(js_input.bstr.length());
+        return static_cast<int>(offset);
     }
 }
 
 int Matcher::end() {
     checkClosed();
-    if (!has_match) throw NrpException("IllegalStateException: No match found yet");
+    if (!has_match || !capture[1]) return 0;
     const uint8_t* input_ptr = js_input.is_wide_char ? 
         reinterpret_cast<const uint8_t*>(js_input.str16.data()) : 
         reinterpret_cast<const uint8_t*>(js_input.str8.data());
     
+    if (capture[1] < input_ptr) return 0;
+
     if (js_input.is_wide_char) {
-        uint32_t u16_idx = (capture[1] - input_ptr) / 2;
-        return js_input.indices[u16_idx];
+        size_t u16_idx = (capture[1] - input_ptr) / 2;
+        if (u16_idx >= js_input.indices.size()) return static_cast<int>(js_input.bstr.length());
+        return static_cast<int>(js_input.indices[u16_idx]);
     } else {
-        return capture[1] - input_ptr;
+        size_t offset = capture[1] - input_ptr;
+        if (offset > js_input.bstr.length()) return static_cast<int>(js_input.bstr.length());
+        return static_cast<int>(offset);
     }
 }
 
