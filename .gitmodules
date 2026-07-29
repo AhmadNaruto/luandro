@@ -1,0 +1,6 @@
+[submodule "thirdparty/luau"]
+	path = thirdparty/luau
+	url = https://github.com/luau-lang/luau
+[submodule "thirdparty/lexbor"]
+	path = thirdparty/lexbor
+	url = https://github.com/lexbor/lexbor

@@ -1,1 +1,2 @@
 /data/data/com.termux/files/home/luandro/library/src/main/cpp/CMakeLists.txt
+/data/data/com.termux/files/home/luandro/thirdparty/lexbor/CMakeLists.txt

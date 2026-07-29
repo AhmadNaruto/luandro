@@ -45,7 +45,7 @@ endif()
 # ============================================================
 # Source root paths (Phase 0 — directory layout)
 # ============================================================
-set(NRP_ROOT        "${CMAKE_SOURCE_DIR}/../../../../..")
+set(NRP_ROOT        "${CMAKE_SOURCE_DIR}/../../../../")
 set(NATIVE_ROOT     "${NRP_ROOT}/native")
 set(THIRDPARTY_ROOT "${NRP_ROOT}/thirdparty")
 
@@ -53,39 +53,59 @@ set(THIRDPARTY_ROOT "${NRP_ROOT}/thirdparty")
 # Third-party submodules (Phase 0 — placeholders for submodules)
 # Added in later phases when submodules are initialized
 # ============================================================
-# add_subdirectory(${THIRDPARTY_ROOT}/lexbor  lexbor)
+add_subdirectory(${THIRDPARTY_ROOT}/lexbor  lexbor)
 # add_subdirectory(${THIRDPARTY_ROOT}/quickjs quickjs)
 # add_subdirectory(${THIRDPARTY_ROOT}/luau    luau)
 # add_subdirectory(${THIRDPARTY_ROOT}/jsregexp jsregexp)
 
 # ============================================================
-# NRP Library — placeholder (Phase 0 skeleton)
-# Real sources added in Phase 3 (Runtime Core)
+# NRP Library
 # ============================================================
 add_library(luandro_nrp SHARED
-    # Phase 3: native/runtime/...
-    # Phase 4: native/binding/...
-    # Phase 5: native/lexsoup/...
-    # Phase 6: native/regex/...
-    # Phase 7: native/quickjs/...
-    # Phase 8: native/luau/...
+    # Phase 3: Runtime Core
+    "${NATIVE_ROOT}/runtime/handle_manager/handle_manager.cpp"
+    "${NATIVE_ROOT}/runtime/object_manager/object_manager.cpp"
+    "${NATIVE_ROOT}/runtime/memory/memory_manager.cpp"
+    "${NATIVE_ROOT}/runtime/strings/string_manager.cpp"
+    "${NATIVE_ROOT}/runtime/exceptions/exception_manager.cpp"
+    "${NATIVE_ROOT}/runtime/converter/type_converter.cpp"
+    "${NATIVE_ROOT}/runtime/runtime.cpp"
+
+    # Phase 5: LexSoup Engine
+    "${NATIVE_ROOT}/lexsoup/document.cpp"
+    "${NATIVE_ROOT}/lexsoup/element.cpp"
+    "${NATIVE_ROOT}/lexsoup/elements.cpp"
+    "${NATIVE_ROOT}/binding/luau/lexsoup_binding.cpp"
+    lexsoup_jni.cpp
+
+    # Phase 6: Regex Engine
+    "${NATIVE_ROOT}/regex/regex.cpp"
+    "${NATIVE_ROOT}/regex/pattern.cpp"
+    "${NATIVE_ROOT}/regex/matcher.cpp"
+    "${NATIVE_ROOT}/regex/match_result.cpp"
+    "${NATIVE_ROOT}/binding/luau/regex_binding.cpp"
+    regex_jni.cpp
 
     # Phase 0: minimal stub to verify build
     nrp_init.cpp
 )
 
 target_include_directories(luandro_nrp PRIVATE
+    "${NATIVE_ROOT}"
     "${NATIVE_ROOT}/runtime"
     "${NATIVE_ROOT}/lexsoup"
     "${NATIVE_ROOT}/regex"
     "${NATIVE_ROOT}/quickjs"
     "${NATIVE_ROOT}/luau"
     "${NATIVE_ROOT}/binding"
+    "${THIRDPARTY_ROOT}/luau/VM/include"
+    "${THIRDPARTY_ROOT}/lexbor/source"
 )
 
 # Link Android system libraries
 # NDK 23+: link by name directly, no find_library needed
 target_link_libraries(luandro_nrp
+    lexbor_static
     log
     android
 )

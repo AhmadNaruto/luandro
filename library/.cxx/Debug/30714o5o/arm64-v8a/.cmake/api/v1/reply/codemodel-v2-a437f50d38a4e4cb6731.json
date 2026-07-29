@@ -1,0 +1,114 @@
+{
+	"configurations" : 
+	[
+		{
+			"abstractTargets" : [],
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-b23a0b23c080df4d29ba.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10.0"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						2
+					]
+				},
+				{
+					"build" : "lexbor",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-lexbor-Debug-23a854458e6883980e33.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "/data/data/com.termux/files/home/luandro/thirdparty/lexbor",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "luandro_nrp",
+					"targetIndexes" : 
+					[
+						2
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "lexbor",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 1,
+					"id" : "lexbor::@92c6e57d143015e7f14c",
+					"jsonFile" : "target-lexbor-Debug-ddbb0232c8ce06e98d87.json",
+					"name" : "lexbor",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "lexbor_static::@92c6e57d143015e7f14c",
+					"jsonFile" : "target-lexbor_static-Debug-eac93dcc5f361df19eb5.json",
+					"name" : "lexbor_static",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "luandro_nrp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-luandro_nrp-Debug-2e40ae383b331e8815bf.json",
+					"name" : "luandro_nrp",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/data/data/com.termux/files/home/luandro/library/.cxx/Debug/30714o5o/arm64-v8a",
+		"source" : "/data/data/com.termux/files/home/luandro/library/src/main/cpp"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 11
+	}
+}

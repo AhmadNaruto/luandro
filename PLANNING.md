@@ -137,10 +137,10 @@ Desenvolver uma **Native Runtime Platform (NRP)** modular e de alta performance 
 
 | Fase | Nome | Status | Descrição |
 |------|------|--------|-----------|
-| **3** | Runtime Core | ⬜ TODO | Implementar ObjectManager, HandleManager, MemoryManager, etc. |
-| **4** | Binding Infrastructure | ⬜ TODO | JNI Framework + Luau Binding Framework reutilizáveis |
-| **5** | LexSoup Engine | ⬜ TODO | HTML parser compatível com JSoup usando Lexbor |
-| **6** | Regex Engine | ⬜ TODO | Regex com jsregexp (Pattern, Matcher, MatchResult, etc.) |
+| **3** | Runtime Core | ✅ DONE | Implementar ObjectManager, HandleManager, MemoryManager, etc. |
+| **4** | Binding Infrastructure | ✅ DONE | JNI Framework + Luau Binding Framework reutilizáveis |
+| **5** | LexSoup Engine | ✅ DONE | HTML parser compatível com JSoup usando Lexbor |
+| **6** | Regex Engine | ✅ DONE | Regex com jsregexp (Pattern, Matcher, MatchResult, etc.) |
 | **7** | QuickJS Engine | ⬜ TODO | Motor JavaScript via QuickJS-NG (Runtime, Context, Module, Promise) |
 | **8** | Luau Engine | ⬜ TODO | Luau VM com auto-registro de LexSoup, Regex e QuickJS |
 | **9** | Integration | ⬜ TODO | Integrar todos os engines + testes completos |
@@ -313,14 +313,14 @@ spec/
 **Objetivo:** Implementar a Native Runtime Platform (sem nenhum engine).
 
 **Componentes:**
-- [ ] `ObjectManager` — gerenciamento de objetos nativos
-- [ ] `HandleManager` — handles seguros para objetos
-- [ ] `MemoryManager` — alocação centralizada
-- [ ] `SharedAllocator` — alocador compartilhado
-- [ ] `StringManager` — gerenciamento de strings
-- [ ] `ExceptionManager` — gerenciamento de exceções
-- [ ] `TypeConverter` — conversão de tipos
-- [ ] `Utilities` — biblioteca de utilitários
+- [x] `ObjectManager` — gerenciamento de objetos nativos
+- [x] `HandleManager` — handles seguros para objetos
+- [x] `MemoryManager` — alocação centralizada
+- [x] `SharedAllocator` — alocador compartilhado
+- [x] `StringManager` — gerenciamento de strings
+- [x] `ExceptionManager` — gerenciamento de exceções
+- [x] `TypeConverter` — conversão de tipos
+- [x] `Utilities` — biblioteca de utilitários
 
 **Requisitos:** C++20, RAII, sem raw pointer exposure, sem lógica JNI.
 
@@ -334,17 +334,17 @@ spec/
 **Objetivo:** Implementar infra de binding reutilizável (sem LexSoup/Regex/QuickJS/Luau).
 
 **JNI Framework:**
-- [ ] Conversão de strings
-- [ ] Conversão de arrays
-- [ ] Conversão de handles
-- [ ] Conversão de exceções
+- [x] Conversão de strings
+- [x] Conversão de arrays
+- [x] Conversão de handles
+- [x] Conversão de exceções
 
 **Luau Binding Framework:**
-- [ ] userdata
-- [ ] metatables
-- [ ] object registration
-- [ ] lifetime management
-- [ ] automatic destruction
+- [x] userdata
+- [x] metatables
+- [x] object registration
+- [x] lifetime management
+- [x] automatic destruction
 
 **Critério de Sucesso:** Todos os engines futuros usam a mesma infra.
 
@@ -354,13 +354,13 @@ spec/
 **Objetivo:** Implementar LexSoup usando Lexbor (`io.github.luandro.lexsoup`).
 
 **API compatível com JSoup:**
-- [ ] `parse(html)` → Document
-- [ ] `doc.title()`
-- [ ] `doc.select(cssQuery)` → Elements
-- [ ] DOM traversal (parent, children, siblings)
-- [ ] DOM modification
-- [ ] Serialization (outerHtml, innerHtml, text)
-- [ ] Node management
+- [x] `parse(html)` → Document
+- [x] `doc.title()`
+- [x] `doc.select(cssQuery)` → Elements
+- [x] DOM traversal (parent, children, siblings)
+- [x] DOM modification
+- [x] Serialization (outerHtml, innerHtml, text)
+- [x] Node management
 
 **Entregas:** Native Engine + Kotlin API + Luau Global Module + Tests + Performance Tests + Docs.
 
@@ -511,9 +511,9 @@ spec/
 ```
 Fases de Preparação:    [ 5/5 ]  (100%)
 Fases de Design:        [ 2/2 ]  (100%)
-Fases de Implementação: [ 0/9 ]  (  0%)
+Fases de Implementação: [ 2/9 ]  ( 22%)
 ─────────────────────────────────────
-TOTAL:                  [ 7/16]  ( 44%)
+TOTAL:                  [ 9/16]  ( 56%)
 ```
 
 ---

@@ -1,6 +1,7 @@
 {
   "buildFiles": [
-    "/data/data/com.termux/files/home/luandro/library/src/main/cpp/CMakeLists.txt"
+    "/data/data/com.termux/files/home/luandro/library/src/main/cpp/CMakeLists.txt",
+    "/data/data/com.termux/files/home/luandro/thirdparty/lexbor/CMakeLists.txt"
   ],
   "cleanCommandsComponents": [
     [
@@ -17,6 +18,18 @@
     "{LIST_OF_TARGETS_TO_BUILD}"
   ],
   "libraries": {
+    "lexbor::@92c6e57d143015e7f14c": {
+      "artifactName": "lexbor",
+      "abi": "arm64-v8a",
+      "output": "/data/data/com.termux/files/home/luandro/library/build/intermediates/cxx/Debug/30714o5o/obj/arm64-v8a/liblexbor.so",
+      "runtimeFiles": []
+    },
+    "lexbor_static::@92c6e57d143015e7f14c": {
+      "artifactName": "lexbor_static",
+      "abi": "arm64-v8a",
+      "output": "/data/data/com.termux/files/home/luandro/library/.cxx/Debug/30714o5o/arm64-v8a/lexbor/liblexbor_static.a",
+      "runtimeFiles": []
+    },
     "luandro_nrp::@6890427a1f51a3e7e1df": {
       "artifactName": "luandro_nrp",
       "abi": "arm64-v8a",

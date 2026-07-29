@@ -1,0 +1,675 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install",
+			"INSTALL_MODULE_HEADERS",
+			"ADD_MODULE_LIBRARY"
+		],
+		"files" : 
+		[
+			"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/config.cmake",
+			"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 238,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 238,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 3
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 371,
+				"parent" : 3
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 371,
+				"parent" : 3
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 371,
+				"parent" : 3
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 371,
+				"parent" : 3
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 371,
+				"parent" : 3
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 371,
+				"parent" : 3
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 238,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 11
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 371,
+				"parent" : 11
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 238,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 14
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 238,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 16
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 238,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 18
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 371,
+				"parent" : 18
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 371,
+				"parent" : 18
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 371,
+				"parent" : 18
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 238,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 23
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 238,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 25
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 238,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 27
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 238,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 29
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 371,
+				"parent" : 29
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 371,
+				"parent" : 29
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 371,
+				"parent" : 29
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 238,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 34
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 238,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 36
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 238,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 38
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 238,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 40
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 252,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 350,
+				"parent" : 42
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 257,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 350,
+				"parent" : 44
+			},
+			{
+				"command" : 0,
+				"file" : 1,
+				"line" : 421,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 1,
+				"line" : 437,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 1,
+				"line" : 449,
+				"parent" : 0
+			}
+		]
+	},
+	"codemodelVersion" : 
+	{
+		"major" : 2,
+		"minor" : 11
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 2,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/core"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 4,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/css"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 5,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor/css",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/css/at_rule"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 6,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor/css",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/css/property"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 7,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor/css",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/css/selectors"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 8,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor/css",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/css/syntax"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 9,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor/css",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/css/unit"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 10,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor/css",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/css/value"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 12,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/dom"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 13,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor/dom",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/dom/interfaces"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 15,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/encoding"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 17,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/engine"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 19,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/html"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 20,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor/html",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/html/interfaces"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 21,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor/html",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/html/tokenizer"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 22,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor/html",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/html/tree"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 24,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/ns"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 26,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/punycode"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 28,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/selectors"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 30,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/style"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 31,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor/style",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/style/dom"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 32,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor/style",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/style/html"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 33,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor/style",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/style/tree"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 35,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/tag"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 37,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/unicode"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 39,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/url"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 41,
+			"component" : "Unspecified",
+			"destination" : "include/lexbor",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/thirdparty/lexbor/source/lexbor/utils"
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 43,
+			"component" : "Unspecified",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/library/build/intermediates/cxx/Debug/30714o5o/obj/arm64-v8a/liblexbor.so.3.1.0",
+				"/data/data/com.termux/files/home/luandro/library/build/intermediates/cxx/Debug/30714o5o/obj/arm64-v8a/liblexbor.so.3"
+			],
+			"targetId" : "lexbor::@92c6e57d143015e7f14c",
+			"targetIndex" : 0,
+			"targetInstallNamelink" : "skip",
+			"type" : "target"
+		},
+		{
+			"backtrace" : 43,
+			"component" : "Unspecified",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/library/build/intermediates/cxx/Debug/30714o5o/obj/arm64-v8a/liblexbor.so"
+			],
+			"targetId" : "lexbor::@92c6e57d143015e7f14c",
+			"targetIndex" : 0,
+			"targetInstallNamelink" : "only",
+			"type" : "target"
+		},
+		{
+			"backtrace" : 45,
+			"component" : "Unspecified",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"lexbor/liblexbor_static.a"
+			],
+			"targetId" : "lexbor_static::@92c6e57d143015e7f14c",
+			"targetIndex" : 1,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 46,
+			"component" : "Unspecified",
+			"destination" : "lib/cmake/lexbor",
+			"exportName" : "lexbor-export",
+			"exportTargets" : 
+			[
+				{
+					"id" : "lexbor::@92c6e57d143015e7f14c",
+					"index" : 0
+				},
+				{
+					"id" : "lexbor_static::@92c6e57d143015e7f14c",
+					"index" : 1
+				}
+			],
+			"paths" : 
+			[
+				"lexbor/CMakeFiles/Export/e1c32fe419c5cd94159d6d11fc3018ae/lexbor-targets.cmake"
+			],
+			"type" : "export"
+		},
+		{
+			"backtrace" : 47,
+			"component" : "Unspecified",
+			"destination" : "lib/cmake/lexbor",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/library/.cxx/Debug/30714o5o/arm64-v8a/lexbor/lexbor-config.cmake",
+				"/data/data/com.termux/files/home/luandro/library/.cxx/Debug/30714o5o/arm64-v8a/lexbor/lexbor-config-version.cmake"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 48,
+			"component" : "Unspecified",
+			"destination" : "lib/pkgconfig",
+			"paths" : 
+			[
+				"/data/data/com.termux/files/home/luandro/library/.cxx/Debug/30714o5o/arm64-v8a/lexbor/lexbor.pc"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "lexbor",
+		"source" : "/data/data/com.termux/files/home/luandro/thirdparty/lexbor"
+	}
+}
