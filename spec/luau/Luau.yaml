@@ -27,14 +27,14 @@ classes:
 # Type mapping table (Kotlin ↔ Luau)
 ##############################################################################
 type_mapping:
-  - kotlin: Unit / null   ↔ luau: nil
-  - kotlin: Boolean       ↔ luau: boolean
-  - kotlin: Int           ↔ luau: number (integer subset)
-  - kotlin: Long          ↔ luau: number (may lose precision > 2^53)
-  - kotlin: Double        ↔ luau: number
-  - kotlin: String        ↔ luau: string
-  - kotlin: ByteArray     ↔ luau: string (binary)
-  - kotlin: LuauValue     ↔ luau: any
+  - "kotlin: Unit / null   ↔ luau: nil"
+  - "kotlin: Boolean       ↔ luau: boolean"
+  - "kotlin: Int           ↔ luau: number (integer subset)"
+  - "kotlin: Long          ↔ luau: number (may lose precision > 2^53)"
+  - "kotlin: Double        ↔ luau: number"
+  - "kotlin: String        ↔ luau: string"
+  - "kotlin: ByteArray     ↔ luau: string (binary)"
+  - "kotlin: LuauValue     ↔ luau: any"
 
 ##############################################################################
 # Native dependency

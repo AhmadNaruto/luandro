@@ -1,15 +1,12 @@
-// native/quickjs/js_value.h
-// Phase 7: QuickJS Engine — JSValue wrapper
-
 #pragma once
 
 #include <handle_manager/handle.h>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 // Forward-declare QuickJS types to avoid exposing quickjs.h in headers
 typedef struct JSContext JSContext;
-typedef long long int64_t;
 // QuickJS JSValue is a tagged union — we forward declare the opaque type
 struct JSValueOpaque;
 

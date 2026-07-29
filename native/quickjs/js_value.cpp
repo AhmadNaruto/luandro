@@ -10,13 +10,6 @@
 
 namespace nrp::js {
 
-// Helper: allocate a heap copy of a JSValue (so we can store it in a handle)
-static JSValue* heap_copy(JSContext* ctx, JSValue val) {
-    auto* p = new JSValue;
-    *p = JS_DupValue(ctx, val);
-    return p;
-}
-
 // ===================================================================
 // Constructor / Destructor
 // ===================================================================
@@ -76,7 +69,7 @@ void JSValueWrapper::compute_type() {
         case JS_TAG_OBJECT: {
             // Determine if Array, Function, or Promise
             JSValue* val = v;
-            if (JS_IsArray(ctx_, *val)) {
+            if (JS_IsArray(*val)) {
                 type_ = Type::Array;
             } else if (JS_IsFunction(ctx_, *val)) {
                 type_ = Type::Function;

@@ -21,6 +21,8 @@ ndk                 = "28.2.13676358"
 junit               = "4.13.2"
 junitExt            = "1.2.1"
 
+dokka               = "1.9.20"
+
 [libraries]
 junit               = { group = "junit",                       name = "junit",            version.ref = "junit"    }
 junit-ext           = { group = "androidx.test.ext",           name = "junit",            version.ref = "junitExt" }
@@ -28,3 +30,4 @@ junit-ext           = { group = "androidx.test.ext",           name = "junit",  
 [plugins]
 android-library     = { id = "com.android.library",            version.ref = "agp"    }
 kotlin-android      = { id = "org.jetbrains.kotlin.android",   version.ref = "kotlin" }
+dokka               = { id = "org.jetbrains.dokka",            version.ref = "dokka"  }

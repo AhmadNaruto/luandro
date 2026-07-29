@@ -2,6 +2,7 @@
 // Phase 7: QuickJS Engine — Context implementation
 
 #include "js_context.h"
+#include "js_runtime.h"
 #include "js_value.h"
 #include "js_exception.h"
 #include <runtime.h>
@@ -319,7 +320,7 @@ void Context::close() {
 
     // Notify parent runtime
     if (runtime_handle_ != kInvalidHandle) {
-        auto* rt = nrp::Runtime::get().objects().get<nrp::js::Runtime>(runtime_handle_);
+        auto* rt = ::nrp::Runtime::get().objects().get<nrp::js::Runtime>(runtime_handle_);
         if (rt) rt->untrack_child(/* self */ kInvalidHandle); // handled by parent
     }
 }

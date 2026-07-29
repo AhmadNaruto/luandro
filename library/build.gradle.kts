@@ -4,6 +4,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.dokka)
 }
 
 android {
@@ -76,15 +77,28 @@ android {
         jvmTarget = "21"
     }
 
-    // Source sets pointing to the modular native layout
+    // Source sets pointing to the modular native layout and generated code
     sourceSets {
         getByName("main") {
             kotlin.srcDirs(
                 "src/main/kotlin",
-                "../kotlin"
+                "../kotlin",
+                "../generated/kotlin"
             )
         }
     }
+}
+
+// Phase 10 & 11: Automated ASL Binding Generation task
+val generateBindings = tasks.register<Exec>("generateBindings") {
+    description = "Generates native headers, JNI bindings, Kotlin wrappers, and Luau bindings from ASL specs."
+    group = "build setup"
+    workingDir = rootDir
+    commandLine("python3", "tools/generator/generate.py")
+}
+
+tasks.matching { it.name.startsWith("pre") && it.name.endsWith("Build") }.configureEach {
+    dependsOn(generateBindings)
 }
 
 dependencies {

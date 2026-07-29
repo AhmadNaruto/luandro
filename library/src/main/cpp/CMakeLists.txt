@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.22.1)
 project(luandro_nrp
         VERSION 0.1.0
         DESCRIPTION "Luandro Native Runtime Platform"
-        LANGUAGES CXX)
+        LANGUAGES CXX C)
 
 # ============================================================
 # C++ Standard — C++20 required (Phase 0.6)
@@ -28,8 +28,11 @@ set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 add_compile_options(
     -Wall
     -Wextra
-    -Wpedantic
     -Wno-unused-parameter
+    -Wno-gnu-zero-variadic-macro-arguments
+    -Wno-pedantic
+    -Wno-missing-field-initializers
+    -Wno-unused-but-set-variable
 )
 
 # ============================================================
@@ -55,7 +58,12 @@ set(THIRDPARTY_ROOT "${NRP_ROOT}/thirdparty")
 # ============================================================
 add_subdirectory(${THIRDPARTY_ROOT}/lexbor  lexbor)
 add_subdirectory(${THIRDPARTY_ROOT}/quickjs quickjs)
-# add_subdirectory(${THIRDPARTY_ROOT}/luau    luau)
+
+# Phase 8: Luau VM (disable CLI/tests/codegen for Android)
+set(LUAU_BUILD_CLI   OFF CACHE BOOL "" FORCE)
+set(LUAU_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(LUAU_EXTERN_C    OFF CACHE BOOL "" FORCE)
+add_subdirectory(${THIRDPARTY_ROOT}/luau luau)
 # add_subdirectory(${THIRDPARTY_ROOT}/jsregexp jsregexp)
 
 # ============================================================
@@ -93,9 +101,15 @@ add_library(luandro_nrp SHARED
     "${NATIVE_ROOT}/binding/luau/quickjs_binding.cpp"
     quickjs_jni.cpp
 
+    # Phase 8: Luau Engine
+    "${NATIVE_ROOT}/luau/luau_vm.cpp"
+    luau_vm_jni.cpp
+
     # Phase 0: minimal stub to verify build
     nrp_init.cpp
 )
+
+set(GENERATED_ROOT "${NRP_ROOT}/generated")
 
 target_include_directories(luandro_nrp PRIVATE
     "${NATIVE_ROOT}"
@@ -105,9 +119,20 @@ target_include_directories(luandro_nrp PRIVATE
     "${NATIVE_ROOT}/quickjs"
     "${NATIVE_ROOT}/luau"
     "${NATIVE_ROOT}/binding"
+    "${GENERATED_ROOT}/native"
+    "${GENERATED_ROOT}/jni"
+    "${GENERATED_ROOT}/luau"
     "${THIRDPARTY_ROOT}/luau/VM/include"
+    "${THIRDPARTY_ROOT}/luau/Compiler/include"
+    "${THIRDPARTY_ROOT}/luau/Common/include"
     "${THIRDPARTY_ROOT}/lexbor/source"
     "${THIRDPARTY_ROOT}/quickjs"
+    "${THIRDPARTY_ROOT}/jsregexp"
+)
+
+target_compile_options(luandro_nrp PRIVATE
+    -Wno-gnu-zero-variadic-macro-arguments
+    -Wno-pedantic
 )
 
 # Link Android system libraries
@@ -115,6 +140,10 @@ target_include_directories(luandro_nrp PRIVATE
 target_link_libraries(luandro_nrp
     lexbor_static
     qjs
+    Luau.VM
+    Luau.Compiler
+    Luau.Ast
+    Luau.Common
     log
     android
 )

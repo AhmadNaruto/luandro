@@ -28,13 +28,13 @@ classes:
 # Type mapping table (Kotlin ↔ JS ↔ Luau)
 ##############################################################################
 type_mapping:
-  - kotlin: Boolean   → js: boolean   → luau: boolean
-  - kotlin: Int       → js: number    → luau: number
-  - kotlin: Long      → js: BigInt    → luau: number (lossy for large values)
-  - kotlin: Double    → js: number    → luau: number
-  - kotlin: String    → js: string    → luau: string
-  - kotlin: null      → js: null      → luau: nil
-  - kotlin: JSValue   → js: (any)     → luau: userdata or primitive
+  - "kotlin: Boolean   → js: boolean   → luau: boolean"
+  - "kotlin: Int       → js: number    → luau: number"
+  - "kotlin: Long      → js: BigInt    → luau: number (lossy for large values)"
+  - "kotlin: Double    → js: number    → luau: number"
+  - "kotlin: String    → js: string    → luau: string"
+  - "kotlin: null      → js: null      → luau: nil"
+  - "kotlin: JSValue   → js: (any)     → luau: userdata or primitive"
 
 ##############################################################################
 # QuickJS-NG source

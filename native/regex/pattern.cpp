@@ -6,35 +6,9 @@
 #include "match_result.h"
 #include <runtime.h>
 #include <exceptions/exception_manager.h>
-#include <libregexp/libregexp.h>
-#include <libregexp/cutils.h>
+#include <libregexp.h>
 
 namespace nrp::regex {
-
-// Define required libregexp glue functions if they are not already defined elsewhere.
-// Wait, we defined them in jsregexp.c but standalone tests won't link jsregexp.c!
-// So let's define them in a way that doesn't conflict, e.g. under weak linkage or check if we can declare them.
-// Actually, since they are standard functions called by libregexp, defining them here is safe!
-#ifndef LRE_ALLOC_DEFINED
-#define LRE_ALLOC_DEFINED
-extern "C" {
-void *lre_realloc(void *opaque, void *ptr, size_t size) {
-    if (size == 0) {
-        std::free(ptr);
-        return nullptr;
-    }
-    return std::realloc(ptr, size);
-}
-
-int lre_check_stack_overflow(void *opaque, size_t alloca_size) {
-    return 0;
-}
-
-int lre_check_timeout(void *opaque) {
-    return 0;
-}
-}
-#endif
 
 Pattern::~Pattern() {
     close();

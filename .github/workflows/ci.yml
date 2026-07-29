@@ -1,0 +1,105 @@
+name: Luandro NRP — CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*.*.*' ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-generator:
+    name: 🔍 Validate ASL & Binding Generator
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: pip install pyyaml
+
+      - name: Run Binding Generator
+        run: python3 tools/generator/generate.py
+
+      - name: Verify Up-To-Date Generated Code
+        run: |
+          if ! git diff --quiet; then
+            echo "::error::Generated code is out of date with ASL specs! Run 'python3 tools/generator/generate.py' locally and commit the changes."
+            git diff
+            exit 1
+          fi
+
+  build-and-package:
+    name: ⚙️ Build Android Library & Native Core
+    needs: validate-generator
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Android NDK
+        uses: nsetup/action-setup-ndk@v1
+        with:
+          ndk-version: '28.0.12673896'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Make Gradle Executable
+        run: chmod +x gradlew
+
+      - name: Build Debug & Release AAR
+        run: ./gradlew :library:assembleDebug :library:assembleRelease --stacktrace
+
+      - name: Upload Release AAR Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: luandro-nrp-aar
+          path: library/build/outputs/aar/*.aar
+          retention-days: 14
+
+  release:
+    name: 🚀 Publish GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build-and-package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Download AAR Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: luandro-nrp-aar
+          path: release-artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-artifacts/*.aar
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

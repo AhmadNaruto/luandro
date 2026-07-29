@@ -22,6 +22,7 @@ struct JSString {
 
     JSString() = default;
     explicit JSString(const std::string& input);
+    void fallback_to_byte_string(const std::string& input);
 };
 
 class Matcher {
@@ -43,7 +44,7 @@ public:
     std::string group();
     std::string groupByIndex(int groupIndex);
     bool isGroupMatched(int groupIndex);
-    int groupCount();
+    int groupCount() const;
     int start();
     int end();
 
