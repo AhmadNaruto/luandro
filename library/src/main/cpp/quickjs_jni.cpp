@@ -2,7 +2,7 @@
 // Phase 7: QuickJS Engine JNI Bindings
 
 #include <jni.h>
-#include <quickjs/quickjs_jni.h>
+#include <quickjs.h>
 #include <quickjs/js_runtime.h>
 #include <quickjs/js_context.h>
 #include <quickjs/js_value.h>

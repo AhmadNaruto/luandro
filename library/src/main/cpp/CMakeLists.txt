@@ -107,6 +107,7 @@ target_include_directories(luandro_nrp PRIVATE
     "${NATIVE_ROOT}/binding"
     "${THIRDPARTY_ROOT}/luau/VM/include"
     "${THIRDPARTY_ROOT}/lexbor/source"
+    "${THIRDPARTY_ROOT}/quickjs"
 )
 
 # Link Android system libraries

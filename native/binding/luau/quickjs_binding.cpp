@@ -8,7 +8,7 @@
 #include <quickjs/js_value.h>
 #include <quickjs/js_exception.h>
 #include <runtime.h>
-#include <quickjs/quickjs.h>
+#include <quickjs.h>
 #include <string>
 #include <vector>
 

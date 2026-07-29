@@ -5,7 +5,7 @@
 #include "js_context.h"
 #include "js_exception.h"
 #include <runtime.h>
-#include <quickjs/quickjs.h>
+#include <quickjs.h>
 
 namespace nrp::js {
 
