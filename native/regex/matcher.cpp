@@ -6,15 +6,12 @@
 #include "match_result.h"
 #include <runtime.h>
 #include <exceptions/exception_manager.h>
-#include <libregexp.h>
-#include <cctype>
-
-namespace nrp::regex {
-
-// Forward-declare QuickJS unicode_from_utf8
 extern "C" {
+#include <libregexp.h>
 int unicode_from_utf8(const uint8_t *p, int max_len, const uint8_t **pp);
 }
+
+namespace nrp::regex {
 
 JSString::JSString(const std::string& input) {
     bstr = input;

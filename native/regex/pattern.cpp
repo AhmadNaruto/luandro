@@ -6,7 +6,9 @@
 #include "match_result.h"
 #include <runtime.h>
 #include <exceptions/exception_manager.h>
+extern "C" {
 #include <libregexp.h>
+}
 
 namespace nrp::regex {
 
