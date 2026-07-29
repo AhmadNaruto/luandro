@@ -4,3 +4,6 @@
 [submodule "thirdparty/lexbor"]
 	path = thirdparty/lexbor
 	url = https://github.com/lexbor/lexbor
+[submodule "thirdparty/quickjs"]
+	path = thirdparty/quickjs
+	url = https://github.com/quickjs-ng/quickjs

@@ -54,7 +54,7 @@ set(THIRDPARTY_ROOT "${NRP_ROOT}/thirdparty")
 # Added in later phases when submodules are initialized
 # ============================================================
 add_subdirectory(${THIRDPARTY_ROOT}/lexbor  lexbor)
-# add_subdirectory(${THIRDPARTY_ROOT}/quickjs quickjs)
+add_subdirectory(${THIRDPARTY_ROOT}/quickjs quickjs)
 # add_subdirectory(${THIRDPARTY_ROOT}/luau    luau)
 # add_subdirectory(${THIRDPARTY_ROOT}/jsregexp jsregexp)
 
@@ -86,6 +86,13 @@ add_library(luandro_nrp SHARED
     "${NATIVE_ROOT}/binding/luau/regex_binding.cpp"
     regex_jni.cpp
 
+    # Phase 7: QuickJS Engine
+    "${NATIVE_ROOT}/quickjs/js_runtime.cpp"
+    "${NATIVE_ROOT}/quickjs/js_context.cpp"
+    "${NATIVE_ROOT}/quickjs/js_value.cpp"
+    "${NATIVE_ROOT}/binding/luau/quickjs_binding.cpp"
+    quickjs_jni.cpp
+
     # Phase 0: minimal stub to verify build
     nrp_init.cpp
 )
@@ -106,6 +113,7 @@ target_include_directories(luandro_nrp PRIVATE
 # NDK 23+: link by name directly, no find_library needed
 target_link_libraries(luandro_nrp
     lexbor_static
+    qjs
     log
     android
 )

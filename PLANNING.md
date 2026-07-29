@@ -141,7 +141,7 @@ Desenvolver uma **Native Runtime Platform (NRP)** modular e de alta performance 
 | **4** | Binding Infrastructure | ✅ DONE | JNI Framework + Luau Binding Framework reutilizáveis |
 | **5** | LexSoup Engine | ✅ DONE | HTML parser compatível com JSoup usando Lexbor |
 | **6** | Regex Engine | ✅ DONE | Regex com jsregexp (Pattern, Matcher, MatchResult, etc.) |
-| **7** | QuickJS Engine | ⬜ TODO | Motor JavaScript via QuickJS-NG (Runtime, Context, Module, Promise) |
+| **7** | QuickJS Engine | ✅ DONE | Motor JavaScript via QuickJS-NG (Runtime, Context, Module, Promise) |
 | **8** | Luau Engine | ⬜ TODO | Luau VM com auto-registro de LexSoup, Regex e QuickJS |
 | **9** | Integration | ⬜ TODO | Integrar todos os engines + testes completos |
 | **10** | Binding Generator | ⬜ TODO | Gerador automático de bindings a partir de specs ASL |
