@@ -26,11 +26,15 @@ public:
 
     Handle matcher(Handle self_handle, const std::string& input);
     bool matches(Handle self_handle, const std::string& input);
+    bool matches(const std::string& input) { return matches(kInvalidHandle, input); }
     Handle find(Handle self_handle, const std::string& input);
     std::vector<Handle> findAll(Handle self_handle, const std::string& input);
     std::string replace(Handle self_handle, const std::string& input, const std::string& replacement);
+    std::string replace(const std::string& input, const std::string& replacement) { return replace(kInvalidHandle, input, replacement); }
     std::string replaceAll(Handle self_handle, const std::string& input, const std::string& replacement);
+    std::string replaceAll(const std::string& input, const std::string& replacement) { return replaceAll(kInvalidHandle, input, replacement); }
     std::vector<std::string> split(Handle self_handle, const std::string& input);
+    std::vector<std::string> split(const std::string& input) { return split(kInvalidHandle, input); }
 
     void close();
 

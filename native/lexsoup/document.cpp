@@ -195,7 +195,7 @@ std::string Document::text() {
     if (body_el) {
         return get_node_text(lxb_dom_interface_node(body_el));
     }
-    lxb_dom_element_t* doc_el = lxb_html_document_element(document_ptr);
+    lxb_dom_element_t* doc_el = lxb_dom_document_element(lxb_dom_interface_document(document_ptr));
     if (doc_el) {
         return get_node_text(lxb_dom_interface_node(doc_el));
     }
