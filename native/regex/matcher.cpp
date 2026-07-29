@@ -411,17 +411,19 @@ Handle Matcher::toMatchResult(Handle self_handle) {
     return h;
 }
 
-void Matcher::close() {
+void Matcher::close(Handle self_handle) {
     if (is_closed) return;
     is_closed = true;
 
     // Untrack from Pattern
-    try {
-        auto* pat = Runtime::get().objects().get<Pattern>(pattern_handle);
-        if (pat) {
-            pat->untrack_child(reinterpret_cast<Handle>(this));
-        }
-    } catch (...) {}
+    if (self_handle != kInvalidHandle && pattern_handle != kInvalidHandle) {
+        try {
+            auto* pat = Runtime::get().objects().get<Pattern>(pattern_handle);
+            if (pat) {
+                pat->untrack_child(self_handle);
+            }
+        } catch (...) {}
+    }
 
     // Destroy children MatchResults
     auto children = child_handles;

@@ -382,12 +382,7 @@ Java_io_github_luandro_regex_Matcher_nativeClose(JNIEnv* env, jobject thiz, jlon
     nrp::jni::withExceptionTranslation(env, [&]() {
         auto* m = nrp::Runtime::get().objects().get<nrp::regex::Matcher>(handle);
         if (m) {
-            nrp::Handle parent = m->pattern();
-            if (parent != nrp::kInvalidHandle) {
-                auto* pat = nrp::Runtime::get().objects().get<nrp::regex::Pattern>(parent);
-                if (pat) pat->untrack_child(handle);
-            }
-            m->close();
+            m->close(static_cast<nrp::Handle>(handle));
         }
         nrp::Runtime::get().objects().destroy(handle);
     });
@@ -448,12 +443,7 @@ Java_io_github_luandro_regex_MatchResult_nativeClose(JNIEnv* env, jobject thiz, 
     nrp::jni::withExceptionTranslation(env, [&]() {
         auto* mr = nrp::Runtime::get().objects().get<nrp::regex::MatchResult>(handle);
         if (mr) {
-            nrp::Handle parent = mr->parent();
-            if (parent != nrp::kInvalidHandle) {
-                auto* matcher = nrp::Runtime::get().objects().get<nrp::regex::Matcher>(parent);
-                if (matcher) matcher->untrack_child(handle);
-            }
-            mr->close();
+            mr->close(static_cast<nrp::Handle>(handle));
         }
         nrp::Runtime::get().objects().destroy(handle);
     });

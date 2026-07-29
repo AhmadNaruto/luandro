@@ -31,17 +31,19 @@ bool MatchResult::isGroupMatched(int index) {
     return captured_groups[index].first;
 }
 
-void MatchResult::close() {
+void MatchResult::close(Handle self_handle) {
     if (is_closed) return;
     is_closed = true;
 
     // Untrack from Matcher
-    try {
-        auto* matcher = Runtime::get().objects().get<Matcher>(parent_handle);
-        if (matcher) {
-            matcher->untrack_child(reinterpret_cast<Handle>(this));
-        }
-    } catch (...) {}
+    if (self_handle != kInvalidHandle && parent_handle != kInvalidHandle) {
+        try {
+            auto* matcher = Runtime::get().objects().get<Matcher>(parent_handle);
+            if (matcher) {
+                matcher->untrack_child(self_handle);
+            }
+        } catch (...) {}
+    }
 }
 
 } // namespace nrp::regex

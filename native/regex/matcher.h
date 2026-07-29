@@ -55,7 +55,7 @@ public:
     std::string replaceFirst(const std::string& replacement);
 
     Handle toMatchResult(Handle self_handle);
-    void close();
+    void close(Handle self_handle = kInvalidHandle);
 
     void track_child(Handle h);
     void untrack_child(Handle h);

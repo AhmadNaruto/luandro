@@ -27,7 +27,7 @@ public:
 
     std::string groupValue(int index);
     bool isGroupMatched(int index);
-    void close();
+    void close(Handle self_handle = kInvalidHandle);
 
 private:
     std::string matched_value;
