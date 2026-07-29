@@ -1,0 +1,2 @@
+# Luandro NRP — Python Tooling Dependencies
+pyyaml>=6.0
