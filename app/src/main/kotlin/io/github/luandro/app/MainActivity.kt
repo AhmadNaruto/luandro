@@ -20,6 +20,12 @@ import io.github.luandro.luau.Luau
 import io.github.luandro.regex.Regex
 
 class MainActivity : ComponentActivity() {
+    companion object {
+        init {
+            System.loadLibrary("luandro_nrp")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

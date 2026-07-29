@@ -17,7 +17,7 @@ extern "C" {
 // ==========================================
 
 JNIEXPORT jlong JNICALL
-Java_io_github_luandro_regex_Regex_nativeCompile(JNIEnv* env, jobject thiz, jstring pattern, jstring flags) {
+Java_io_github_luandro_regex_Regex_nativeCompile(JNIEnv* env, jclass clazz, jstring pattern, jstring flags) {
     return nrp::jni::withExceptionTranslation(env, [&]() -> jlong {
         nrp::jni::JStringUTF pat_guard(env, pattern);
         nrp::jni::JStringUTF fl_guard(env, flags);
@@ -27,7 +27,7 @@ Java_io_github_luandro_regex_Regex_nativeCompile(JNIEnv* env, jobject thiz, jstr
 }
 
 JNIEXPORT jboolean JNICALL
-Java_io_github_luandro_regex_Regex_nativeMatches(JNIEnv* env, jobject thiz, jstring pattern, jstring input) {
+Java_io_github_luandro_regex_Regex_nativeMatches(JNIEnv* env, jclass clazz, jstring pattern, jstring input) {
     return nrp::jni::withExceptionTranslation(env, [&]() -> jboolean {
         nrp::jni::JStringUTF pat_guard(env, pattern);
         nrp::jni::JStringUTF inp_guard(env, input);

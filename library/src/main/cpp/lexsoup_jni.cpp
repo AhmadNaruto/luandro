@@ -16,7 +16,7 @@ extern "C" {
 // ==========================================
 
 JNIEXPORT jlong JNICALL
-Java_io_github_luandro_lexsoup_LexSoup_nativeParse(JNIEnv* env, jobject thiz, jstring html) {
+Java_io_github_luandro_lexsoup_LexSoup_nativeParse(JNIEnv* env, jclass clazz, jstring html) {
     return nrp::jni::withExceptionTranslation(env, [&]() -> jlong {
         nrp::jni::JStringUTF html_guard(env, html);
         std::string html_str = html_guard.str();

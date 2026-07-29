@@ -127,7 +127,7 @@ extern "C" {
 // ==========================================
 
 JNIEXPORT jlong JNICALL
-Java_io_github_luandro_luau_LuauVM_nativeCreate(JNIEnv* env, jclass cls) {
+Java_io_github_luandro_luau_Luau_nativeCreate(JNIEnv* env, jclass cls) {
     return nrp::jni::withExceptionTranslation(env, [&]() -> jlong {
         auto vm = LuauVM::create();
         nrp::Handle h = nrp::Runtime::get().handles().allocate(LuauVM::type_tag);
@@ -137,7 +137,7 @@ Java_io_github_luandro_luau_LuauVM_nativeCreate(JNIEnv* env, jclass cls) {
 }
 
 JNIEXPORT jlong JNICALL
-Java_io_github_luandro_luau_LuauVM_nativeCreateWithMemoryLimit(JNIEnv* env, jclass cls, jlong maxBytes) {
+Java_io_github_luandro_luau_Luau_nativeCreateWithMemoryLimit(JNIEnv* env, jclass cls, jlong maxBytes) {
     return nrp::jni::withExceptionTranslation(env, [&]() -> jlong {
         if (maxBytes <= 0) {
             env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"),
