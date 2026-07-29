@@ -7,3 +7,6 @@
 [submodule "thirdparty/quickjs"]
 	path = thirdparty/quickjs
 	url = https://github.com/quickjs-ng/quickjs
+[submodule "thirdparty/jsregexp"]
+	path = thirdparty/jsregexp
+	url = https://github.com/kmarius/jsregexp
