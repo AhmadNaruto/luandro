@@ -8,10 +8,46 @@
 #include <exceptions/exception_manager.h>
 extern "C" {
 #include <libregexp.h>
-int unicode_from_utf8(const uint8_t *p, int max_len, const uint8_t **pp);
 }
 
 namespace nrp::regex {
+
+static int nrp_unicode_from_utf8(const uint8_t *p, int max_len, const uint8_t **pp) {
+    uint8_t c = *p;
+    if (c < 0x80) {
+        *pp = p + 1;
+        return c;
+    }
+    int len;
+    uint32_t val;
+    if ((c & 0xE0) == 0xC0) {
+        len = 2;
+        val = c & 0x1F;
+    } else if ((c & 0xF0) == 0xE0) {
+        len = 3;
+        val = c & 0x0F;
+    } else if ((c & 0xF8) == 0xF0) {
+        len = 4;
+        val = c & 0x07;
+    } else {
+        *pp = p + 1;
+        return -1;
+    }
+    if (len > max_len) {
+        *pp = p + 1;
+        return -1;
+    }
+    for (int i = 1; i < len; i++) {
+        uint8_t b = p[i];
+        if ((b & 0xC0) != 0x80) {
+            *pp = p + 1;
+            return -1;
+        }
+        val = (val << 6) | (b & 0x3F);
+    }
+    *pp = p + len;
+    return static_cast<int>(val);
+}
 
 JSString::JSString(const std::string& input) {
     bstr = input;
@@ -20,32 +56,23 @@ JSString::JSString(const std::string& input) {
         is_wide_char = false;
         len = 0;
         str8 = {0};
-        indices = {0};
-        rev_indices = {0};
         return;
     }
     
-    bool has_non_ascii = false;
-    for (unsigned char c : input) {
-        if (c & 0x80) {
-            has_non_ascii = true;
+    bool wide = false;
+    for (char c : input) {
+        if (static_cast<unsigned char>(c) >= 128) {
+            wide = true;
             break;
         }
     }
 
-    if (!has_non_ascii) {
+    if (!wide) {
         is_wide_char = false;
         len = n;
-        str8.resize(n + 1);
-        std::memcpy(str8.data(), input.data(), n);
-        str8[n] = 0;
-        
-        indices.resize(n + 1);
-        rev_indices.resize(n + 1);
-        for (uint32_t i = 0; i <= n; ++i) {
-            indices[i] = i;
-            rev_indices[i] = i;
-        }
+        str8.assign(input.begin(), input.end());
+        str8.push_back(0);
+        return;
     } else {
         is_wide_char = true;
         indices.resize(n + 1, 0);
@@ -63,7 +90,7 @@ JSString::JSString(const std::string& input) {
             indices[q_idx] = pos - start;
             rev_indices[pos - start] = q_idx;
 
-            int c = unicode_from_utf8(pos, 6, &pos);
+            int c = nrp_unicode_from_utf8(pos, 6, &pos);
             if (c == -1) {
                 fallback_to_byte_string(input);
                 return;
