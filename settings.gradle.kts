@@ -18,3 +18,4 @@ rootProject.name = "luandro"
 
 // Native Runtime Platform modules
 include(":library")
+include(":app")
