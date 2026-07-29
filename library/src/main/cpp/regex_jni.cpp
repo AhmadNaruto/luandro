@@ -36,7 +36,7 @@ Java_io_github_luandro_regex_Regex_nativeMatches(JNIEnv* env, jclass clazz, jstr
 }
 
 JNIEXPORT jlong JNICALL
-Java_io_github_luandro_regex_Regex_nativeFind(JNIEnv* env, jobject thiz, jstring pattern, jstring input) {
+Java_io_github_luandro_regex_Regex_nativeFind(JNIEnv* env, jclass clazz, jstring pattern, jstring input) {
     return nrp::jni::withExceptionTranslation(env, [&]() -> jlong {
         nrp::jni::JStringUTF pat_guard(env, pattern);
         nrp::jni::JStringUTF inp_guard(env, input);
@@ -50,7 +50,7 @@ Java_io_github_luandro_regex_Regex_nativeFind(JNIEnv* env, jobject thiz, jstring
 }
 
 JNIEXPORT jlongArray JNICALL
-Java_io_github_luandro_regex_Regex_nativeFindAll(JNIEnv* env, jobject thiz, jstring pattern, jstring input) {
+Java_io_github_luandro_regex_Regex_nativeFindAll(JNIEnv* env, jclass clazz, jstring pattern, jstring input) {
     return nrp::jni::withExceptionTranslation(env, [&]() -> jlongArray {
         nrp::jni::JStringUTF pat_guard(env, pattern);
         nrp::jni::JStringUTF inp_guard(env, input);
@@ -67,7 +67,7 @@ Java_io_github_luandro_regex_Regex_nativeFindAll(JNIEnv* env, jobject thiz, jstr
 }
 
 JNIEXPORT jstring JNICALL
-Java_io_github_luandro_regex_Regex_nativeReplace(JNIEnv* env, jobject thiz, jstring pattern, jstring input, jstring replacement) {
+Java_io_github_luandro_regex_Regex_nativeReplace(JNIEnv* env, jclass clazz, jstring pattern, jstring input, jstring replacement) {
     return nrp::jni::withExceptionTranslation(env, [&]() -> jstring {
         nrp::jni::JStringUTF pat_guard(env, pattern);
         nrp::jni::JStringUTF inp_guard(env, input);
@@ -78,7 +78,7 @@ Java_io_github_luandro_regex_Regex_nativeReplace(JNIEnv* env, jobject thiz, jstr
 }
 
 JNIEXPORT jstring JNICALL
-Java_io_github_luandro_regex_Regex_nativeReplaceAll(JNIEnv* env, jobject thiz, jstring pattern, jstring input, jstring replacement) {
+Java_io_github_luandro_regex_Regex_nativeReplaceAll(JNIEnv* env, jclass clazz, jstring pattern, jstring input, jstring replacement) {
     return nrp::jni::withExceptionTranslation(env, [&]() -> jstring {
         nrp::jni::JStringUTF pat_guard(env, pattern);
         nrp::jni::JStringUTF inp_guard(env, input);
@@ -89,7 +89,7 @@ Java_io_github_luandro_regex_Regex_nativeReplaceAll(JNIEnv* env, jobject thiz, j
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_io_github_luandro_regex_Regex_nativeSplit(JNIEnv* env, jobject thiz, jstring pattern, jstring input) {
+Java_io_github_luandro_regex_Regex_nativeSplit(JNIEnv* env, jclass clazz, jstring pattern, jstring input) {
     return nrp::jni::withExceptionTranslation(env, [&]() -> jobjectArray {
         nrp::jni::JStringUTF pat_guard(env, pattern);
         nrp::jni::JStringUTF inp_guard(env, input);
