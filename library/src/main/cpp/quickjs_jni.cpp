@@ -20,23 +20,29 @@ namespace {
 
 // Translates nrp::js exceptions into JVM exceptions
 template<typename Func>
-auto withJSExceptionTranslation(JNIEnv* env, Func&& func) -> decltype(func()) {
-    return nrp::jni::withExceptionTranslation(env, [&]() -> decltype(func()) {
+auto withJSExceptionTranslation(JNIEnv* env, Func&& func) {
+    using R = decltype(func());
+    return nrp::jni::withExceptionTranslation(env, [&]() -> R {
         try {
-            return func();
+            if constexpr (std::is_same_v<R, void>) {
+                func();
+                return;
+            } else {
+                return func();
+            }
         } catch (const nrp::js::JSException& e) {
             jclass cls = env->FindClass("io/github/luandro/js/JSException");
             if (cls) env->ThrowNew(cls, e.what());
             else env->ThrowNew(env->FindClass("java/lang/RuntimeException"), e.what());
-            return decltype(func()){};
+            if constexpr (!std::is_same_v<R, void>) return R{};
         } catch (const nrp::js::RuntimeClosedException& e) {
             jclass cls = env->FindClass("java/lang/IllegalStateException");
             if (cls) env->ThrowNew(cls, e.what());
-            return decltype(func()){};
+            if constexpr (!std::is_same_v<R, void>) return R{};
         } catch (const nrp::js::ContextClosedException& e) {
             jclass cls = env->FindClass("java/lang/IllegalStateException");
             if (cls) env->ThrowNew(cls, e.what());
-            return decltype(func()){};
+            if constexpr (!std::is_same_v<R, void>) return R{};
         }
     });
 }

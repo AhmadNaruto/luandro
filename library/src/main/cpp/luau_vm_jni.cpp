@@ -19,24 +19,30 @@ using nrp::luau::LuauValue;
 namespace {
 
 template<typename Func>
-auto withLuauExceptions(JNIEnv* env, Func&& func) -> decltype(func()) {
-    return nrp::jni::withExceptionTranslation(env, [&]() -> decltype(func()) {
+auto withLuauExceptions(JNIEnv* env, Func&& func) {
+    using R = decltype(func());
+    return nrp::jni::withExceptionTranslation(env, [&]() -> R {
         try {
-            return func();
+            if constexpr (std::is_same_v<R, void>) {
+                func();
+                return;
+            } else {
+                return func();
+            }
         } catch (const nrp::luau::LuauCompileException& e) {
             jclass cls = env->FindClass("io/github/luandro/luau/LuauCompileException");
             if (cls) env->ThrowNew(cls, e.what());
             else env->ThrowNew(env->FindClass("java/lang/RuntimeException"), e.what());
-            return decltype(func()){};
+            if constexpr (!std::is_same_v<R, void>) return R{};
         } catch (const nrp::luau::LuauRuntimeException& e) {
             jclass cls = env->FindClass("io/github/luandro/luau/LuauRuntimeException");
             if (cls) env->ThrowNew(cls, e.what());
             else env->ThrowNew(env->FindClass("java/lang/RuntimeException"), e.what());
-            return decltype(func()){};
+            if constexpr (!std::is_same_v<R, void>) return R{};
         } catch (const nrp::luau::VMClosedException& e) {
             jclass cls = env->FindClass("java/lang/IllegalStateException");
             if (cls) env->ThrowNew(cls, e.what());
-            return decltype(func()){};
+            if constexpr (!std::is_same_v<R, void>) return R{};
         }
     });
 }
